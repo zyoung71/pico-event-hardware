@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "config_autogen.h": "c",
-        "*.tcc": "cpp",
-        "numeric": "cpp",
-        "streambuf": "cpp"
-    }
-}
