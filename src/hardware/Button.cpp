@@ -3,18 +3,18 @@
 
 Button::Button(uint8_t gpio_pin, bool gnd_to_pin, void* user_data)
     : GPIODevice(gpio_pin, gnd_to_pin ? Pull::UP : Pull::DOWN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, user_data),
-    gnd_to_pin(gnd_to_pin)
+    gnd_to_pin(gnd_to_pin), release_actions_offset(0)
 {
 }
 
 void Button::SetPressAndReleaseActions(CallbackAction* press_actions, size_t press_count,
     CallbackAction* release_actions, size_t release_count)
 {
-    all_actions = std::make_unique<CallbackAction[]>(press_count + release_count);
+    event_actions = std::make_unique<CallbackAction[]>(press_count + release_count);
     if (press_actions)
-        std::copy(press_actions, press_actions + press_count - 1, all_actions.get());
+        std::copy(press_actions, press_actions + press_count - 1, event_actions.get());
     if (release_actions)
-        std::copy(release_actions, release_actions + release_count, all_actions.get() + press_count);
+        std::copy(release_actions, release_actions + release_count, event_actions.get() + press_count);
 }
 
 void Button::SetReleaseAndPressActions(CallbackAction* release_actions, size_t release_count,
@@ -32,6 +32,21 @@ void Button::HandleIRQ(uint32_t events_triggered_mask)
     }
 }
 
+void Button::Dispatch(const Event* ev) const
+{
+    const ButtonEvent* self_event = (ButtonEvent*)ev;
+    if (self_event->WasPressed())
+    {
+        for (size_t i = 0; i < release_actions_offset - 1; i++)
+            event_actions[i](ev, user_data);
+    }
+    else
+    {
+        for (size_t i = release_actions_offset; i < action_count; i++)
+            event_actions[i](ev, user_data);
+    }
+}
+
 bool Button::IsActivated() const
 {
     return gnd_to_pin ? !gpio_get(gpio_pin) : gpio_get(gpio_pin);
@@ -43,7 +58,7 @@ void DoublePressButton::timer_action(const Event* ev, void* user_data)
     self->double_press_intermediate = false;
 }
 
-DoublePressButton::DoublePressButton(uint8_t gpio_pin, absolute_time_t window_ms, bool gnd_to_pin, void* user_data)
+DoublePressButton::DoublePressButton(uint8_t gpio_pin, uint32_t window_ms, bool gnd_to_pin, void* user_data)
     : Button(gpio_pin, gnd_to_pin, user_data), press_window_ms(window_ms), press_window_timer(CountdownTimer(this))
 {
     static auto func_ptr = &timer_action;
@@ -83,7 +98,7 @@ void TriplePressButton::timer_action(const Event* ev, void* user_data)
     self->double_press_intermediate = false;
 }
 
-TriplePressButton::TriplePressButton(uint8_t gpio_pin, absolute_time_t window_ms, bool gnd_to_pin, void* user_data)
+TriplePressButton::TriplePressButton(uint8_t gpio_pin, uint32_t window_ms, bool gnd_to_pin, void* user_data)
     : DoublePressButton(gpio_pin, window_ms, gnd_to_pin, user_data)
 {
     static auto func_ptr = &timer_action;

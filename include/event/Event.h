@@ -75,13 +75,13 @@ public:
 class EventSource
 {
 private:
-    void Dispatch(const Event* event) const;
+    virtual void Dispatch(const Event* event) const;
 
 public:
     typedef void (*CallbackAction)(const Event* event, void* user_data);
 
 protected:
-    std::unique_ptr<CallbackAction[]> all_actions;
+    std::unique_ptr<CallbackAction[]> event_actions;
     size_t action_count;
     void* user_data;
     bool is_enabled;
@@ -93,7 +93,7 @@ public:
     EventSource(void* user_data = nullptr);
     virtual ~EventSource() = default;
 
-    void SetActions(CallbackAction* all_actions, size_t action_count);
+    void SetActions(CallbackAction* event_actions, size_t action_count);
     inline void SetUserData(void* user_data)
     {
         this->user_data = user_data;

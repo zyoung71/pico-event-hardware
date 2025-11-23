@@ -5,6 +5,11 @@
 
 class Button : public GPIODevice
 {
+private:
+    void Dispatch(const Event* ev) const override;
+
+    size_t release_actions_offset;
+
 protected:
     bool gnd_to_pin;
 
@@ -38,13 +43,13 @@ protected:
     size_t double_press_action_count;
     bool double_press_intermediate; // switched on when button is pressed once, awaiting the second
 
-    absolute_time_t press_window_ms;
+    uint32_t press_window_ms;
     CountdownTimer press_window_timer;
 
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    DoublePressButton(uint8_t gpio_pin, absolute_time_t window_ms = 500, bool gnd_to_pin = false, void* user_data = nullptr);
+    DoublePressButton(uint8_t gpio_pin, uint32_t window_ms = 500, bool gnd_to_pin = false, void* user_data = nullptr);
     virtual ~DoublePressButton() = default;
 
     void SetDoublePressActions(CallbackAction* double_press_actions, size_t count);
@@ -68,7 +73,7 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    TriplePressButton(uint8_t gpio_pin, absolute_time_t window_ms = 500, bool gnd_to_pin = false, void* user_data = nullptr);
+    TriplePressButton(uint8_t gpio_pin, uint32_t window_ms = 500, bool gnd_to_pin = false, void* user_data = nullptr);
     virtual ~TriplePressButton() = default;
 
     void SetTriplePressActions(CallbackAction* triple_press_actions, size_t count);

@@ -43,7 +43,7 @@ bool ButtonEvent::WasPressed() const
 }
 
 EventSource::EventSource(void* user_data)
-    : all_actions(nullptr), action_count(0), user_data(user_data), is_enabled(true)
+    : event_actions(nullptr), action_count(0), user_data(user_data), is_enabled(true)
 {
 }
 
@@ -51,14 +51,14 @@ void EventSource::Dispatch(const Event* ev) const
 {
     for (size_t i = 0; i < action_count; i++)
     {
-        all_actions[i](ev, user_data);
+        event_actions[i](ev, user_data);
     }
 }
 
 void EventSource::SetActions(CallbackAction* all_actions, size_t action_count)
 {
-    this->all_actions = std::make_unique<CallbackAction[]>(action_count);
-    std::copy(all_actions, all_actions + action_count, this->all_actions.get());
+    this->event_actions = std::make_unique<CallbackAction[]>(action_count);
+    std::copy(all_actions, all_actions + action_count, this->event_actions.get());
     this->action_count = action_count;
 }
 
