@@ -7,6 +7,8 @@ if (NOT TARGET pico-event-hardware)
         src/hardware/Button.cpp
     )
     
+    add_subdirectory(lib/pico-util)
+
     target_include_directories(pico-event-hardware PUBLIC
         include
     )
@@ -14,6 +16,7 @@ if (NOT TARGET pico-event-hardware)
     target_link_libraries(pico-event-hardware
         pico_stdlib
         pico_multicore
+        pico-util
     )
     
 endif()

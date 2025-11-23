@@ -1,0 +1,3 @@
+[submodule "lib/pico-util"]
+	path = lib/pico-util
+	url = https://github.com/zyoung71/pico-util
