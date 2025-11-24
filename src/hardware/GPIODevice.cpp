@@ -1,5 +1,12 @@
 #include <hardware/GPIODevice.h>
 
+GPIODevice::GPIOEnableCallback::GPIOEnableCallback()
+{
+    gpio_set_irq_callback((gpio_irq_callback_t)&gpio_callback);
+}
+
+GPIODevice::GPIOEnableCallback GPIODevice::_callback_enable_inst;
+
 GPIODevice* GPIODevice::instances[30] = {};
 
 void GPIODevice::gpio_callback(uint8_t gpio_pin, uint32_t events_triggered_mask)
@@ -25,7 +32,7 @@ GPIODevice::GPIODevice(uint8_t gpio_pin, Pull pull, uint32_t event_mask, void* u
         default: gpio_disable_pulls(gpio_pin); break;
     }
 
-    gpio_set_irq_enabled_with_callback(gpio_pin, event_mask, true, (gpio_irq_callback_t)&gpio_callback);
+    gpio_set_irq_enabled(gpio_pin, event_mask, true);
 }
 
 GPIODevice::~GPIODevice()
@@ -35,12 +42,12 @@ GPIODevice::~GPIODevice()
 
 void GPIODevice::EnableImpl()
 {
-    gpio_set_irq_enabled_with_callback(gpio_pin, event_mask, true, (gpio_irq_callback_t)&gpio_callback);
+    gpio_set_irq_enabled(gpio_pin, event_mask, true);
 }
 
 void GPIODevice::DisableImpl()
 {
-    gpio_set_irq_enabled_with_callback(gpio_pin, event_mask, false, nullptr);
+    gpio_set_irq_enabled(gpio_pin, event_mask, false);
 }
 
 void GPIODevice::HandleIRQ(uint32_t events_triggered_mask)

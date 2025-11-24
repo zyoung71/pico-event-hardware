@@ -25,6 +25,11 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 private:
+    static struct GPIOEnableCallback
+    {
+        GPIOEnableCallback();
+    } _callback_enable_inst;
+
     static void gpio_callback(uint8_t gpio_pin, uint32_t events_triggered_mask);
 
 public:
