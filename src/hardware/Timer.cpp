@@ -73,7 +73,6 @@ void RepeatingTimer::Start(uint32_t ms)
     us_begintime = ms * 1000ULL;
     us_start = to_us_since_boot(get_absolute_time());
     is_active = add_repeating_timer_ms(ms, (repeating_timer_callback_t)&timer_callback, this, &repeat_timer);
-    
 }
 
 void RepeatingTimer::End()

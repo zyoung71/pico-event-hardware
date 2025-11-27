@@ -1,8 +1,15 @@
 #include <event/Event.h>
 #include <hardware/Button.h>
 
-bool Event::is_queue_init = false;
+#include <cstring>
+
 queue_t Event::event_queue = {};
+Event::_InitializeEventQueue Event::_initialize_event_queue = Event::_InitializeEventQueue();
+
+Event::_InitializeEventQueue::_InitializeEventQueue()
+{
+    queue_init(&event_queue, sizeof(Event*), 32);
+}
 
 void Event::HandleEvents()
 {
@@ -10,15 +17,13 @@ void Event::HandleEvents()
     if (queue_try_remove(&event_queue, &event))
     {
         event->source->Dispatch(event);
+        delete event;
     }
-    delete event;
 }
 
 Event::Event(const EventSource* source)
     : source(source)
 {
-    if (!is_queue_init)
-        queue_init(&event_queue, sizeof(Event*), 32);
 }
 
 GPIOEvent::GPIOEvent(const EventSource* source, uint32_t events_triggered_mask)
@@ -41,6 +46,22 @@ bool ButtonEvent::WasPressed() const
     const Button* button = (Button*)source;
     return events_triggered_mask & (button->IsWiredToGround() ? GPIO_IRQ_EDGE_FALL : GPIO_IRQ_EDGE_RISE);
 }
+
+CommandEvent::CommandEvent(const EventSource* source, Command&& cmd)
+    : Event(source), command(cmd)
+{
+}
+
+USBUpdateEvent::USBUpdateEvent(const EventSource* source, USBConnectionStatus connection_status)
+    : Event(source), connection_status(connection_status)
+{
+}
+
+/**
+ * Event implementation end.
+ * ---------------------------
+ * Source implementation begin. 
+*/
 
 EventSource::EventSource(void* user_data)
     : event_actions(nullptr), action_count(0), user_data(user_data), is_enabled(true)

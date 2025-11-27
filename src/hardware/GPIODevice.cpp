@@ -1,11 +1,11 @@
 #include <hardware/GPIODevice.h>
 
-GPIODevice::GPIOEnableCallback::GPIOEnableCallback()
+GPIODevice::_GPIOEnableCallback::_GPIOEnableCallback()
 {
     gpio_set_irq_callback((gpio_irq_callback_t)&gpio_callback);
 }
 
-GPIODevice::GPIOEnableCallback GPIODevice::_callback_enable_inst;
+GPIODevice::_GPIOEnableCallback GPIODevice::_callback_enable_inst;
 
 GPIODevice* GPIODevice::instances[30] = {};
 

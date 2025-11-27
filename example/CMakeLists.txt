@@ -48,6 +48,54 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     pico-event-hardware
 )
 
-pico_enable_stdio_usb(${CMAKE_PROJECT_NAME} 1)
-pico_enable_stdio_uart(${CMAKE_PROJECT_NAME} 1)
+pico_enable_stdio_usb(${CMAKE_PROJECT_NAME} 0)
+pico_enable_stdio_uart(${CMAKE_PROJECT_NAME} 0)
 pico_add_extra_outputs(${CMAKE_PROJECT_NAME})
+
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/tmp/flash.sh
+"#!/bin/bash
+
+MOUNT_PNT=\"/mnt/pico\"
+
+mkdir -p $MOUNT_PNT
+
+DEVICE=$(blkid -o device -L ${PICO_LABEL})
+
+if [ -n \"$DEVICE\" ]
+then
+    sudo unmount -l $MOUNT_PNT
+    echo \"Found Pico at $DEVICE. Mounting...\"
+    sudo mount $DEVICE $MOUNT_PNT
+    echo \"Mounted $DEVICE at $MOUNT_PNT.\"
+    echo \"Copying binary to board...\"
+    sudo cp ${CMAKE_PROJECT_NAME}.uf2 $MOUNT_PNT/${CMAKE_PROJECT_NAME}.uf2
+else
+    echo \"Device not found. Be sure to hold BOOTSEL while re-powering the board to your computer.\"
+fi
+")
+
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/tmp/tty.sh
+"
+#!/bin/bash
+
+DEVICE_NAME=$(sudo dmesg | grep -oP 'ttyACM[0-9]+')
+
+if [ -z \"DEVICE_NAME\" ]
+then
+    echo \"Device not found, ensure serial print is enabled.\"
+else
+    minicom -b 115200 -o -D /dev/$DEVICE_NAME
+fi
+")
+
+file(
+    COPY ${CMAKE_CURRENT_BINARY_DIR}/tmp/flash.sh
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+    FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+)
+
+file(
+    COPY ${CMAKE_CURRENT_BINARY_DIR}/tmp/tty.sh
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+    FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+)

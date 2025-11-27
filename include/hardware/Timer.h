@@ -12,7 +12,7 @@ protected:
 
 public:
     inline Timer(void* user_data = nullptr)
-        : EventSource(user_data), us_elapsed(0), us_start(0), us_begintime(0)
+        : EventSource(user_data), us_elapsed(0), us_start(0), us_begintime(0), is_active(false)
     {
     }
     virtual ~Timer() = default;

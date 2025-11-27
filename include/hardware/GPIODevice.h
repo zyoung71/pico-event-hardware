@@ -25,15 +25,15 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 private:
-    static struct GPIOEnableCallback
+    static struct _GPIOEnableCallback
     {
-        GPIOEnableCallback();
+        _GPIOEnableCallback();
     } _callback_enable_inst;
 
     static void gpio_callback(uint8_t gpio_pin, uint32_t events_triggered_mask);
 
 public:
-    GPIODevice(uint8_t gpio_pin, Pull pull, uint32_t event_mask, void* user_data);
+    GPIODevice(uint8_t gpio_pin, Pull pull, uint32_t event_mask, void* user_data = nullptr);
     virtual ~GPIODevice();
 
     inline bool IsHigh() const

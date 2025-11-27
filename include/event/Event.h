@@ -1,18 +1,21 @@
 #pragma once
 
-#include <cstdint>
+#include "Command.h"
+
 #include <memory>
 
 #include <pico/util/queue.h>
-
-#include <util/ResultOptional.h>
 
 class EventSource;
 
 class Event
 {
 private:
-    static bool is_queue_init;
+    struct _InitializeEventQueue
+    {
+        _InitializeEventQueue();
+    };
+    static _InitializeEventQueue _initialize_event_queue;
 
 protected:
     const EventSource* source;
@@ -25,15 +28,27 @@ public:
     Event(const EventSource* source);
 
     /**
-     * @return An optional containing the downcasted event if successful, and the generic event if not.
-     * 
+     * @return The downcasted event type. Always check for a nullptr here.
     */
-    template<class EventTemplate>
-    ResultOptional<const EventTemplate*, bool> GetEventAsType() const
+    template<class EventTemplate> requires std::is_base_of_v<Event, EventTemplate>
+    EventTemplate* GetEventAsType() const
     {
         if (EventTemplate* ev = (EventTemplate*)this)
-            return ResultOptional(ev, true);
-        return ResultOptional(this, false);
+            return ev;
+        return nullptr;
+    }
+
+    inline const EventSource* GetSource() const
+    {
+        return source;
+    }
+
+    template<class EventSourceTemplate> requires std::is_base_of_v<EventSource, EventSourceTemplate>
+    EventSourceTemplate* GetSourceAsType() const
+    {
+        if (EventSourceTemplate* t_source = (EventSourceTemplate*)source)
+            return t_source;
+        return nullptr;
     }
 };
 
@@ -70,6 +85,43 @@ public:
     }
 
     bool WasPressed() const;
+};
+
+class CommandEvent : public Event
+{
+protected:
+    Command command;
+
+public:
+    CommandEvent(const EventSource* source, Command&& cmd);
+
+    inline const Command& GetCommand() const
+    {
+        return command;
+    }
+
+};
+
+enum USBConnectionStatus
+{
+    DISCONNECTED,
+    CONNECTED,
+    SUSPENDED,
+    RESUMED
+};
+
+class USBUpdateEvent : public Event
+{
+protected:
+    USBConnectionStatus connection_status;
+
+public:
+    USBUpdateEvent(const EventSource* source, USBConnectionStatus connection_status);
+
+    inline USBConnectionStatus GetConnectionStatus() const
+    {
+        return connection_status;
+    }
 };
 
 class EventSource
