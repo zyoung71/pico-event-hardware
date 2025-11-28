@@ -63,3 +63,14 @@ bool GPIODevice::IsActivated() const
 {
     return gpio_get(gpio_pin);
 }
+
+GPIODeviceDebounce::GPIODeviceDebounce(uint8_t gpio_pin, Pull pull, uint32_t event_mask, uint32_t debounce_ms, void* user_data)
+    : GPIODevice(gpio_pin, pull, event_mask, user_data), debouncer(debounce_ms)
+{
+}
+
+void GPIODeviceDebounce::HandleIRQ(uint32_t events_triggered_mask)
+{
+    if (debouncer.Allow())
+        GPIODevice::HandleIRQ(events_triggered_mask);
+}

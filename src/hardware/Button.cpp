@@ -1,8 +1,8 @@
 #include <hardware/Button.h>
 #include <hardware/Timer.h>
 
-Button::Button(uint8_t gpio_pin, bool gnd_to_pin, void* user_data)
-    : GPIODevice(gpio_pin, gnd_to_pin ? Pull::UP : Pull::DOWN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, user_data),
+Button::Button(uint8_t gpio_pin, bool gnd_to_pin, uint32_t debounce_ms, void* user_data)
+    : GPIODeviceDebounce(gpio_pin, gnd_to_pin ? Pull::UP : Pull::DOWN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, debounce_ms, user_data),
     gnd_to_pin(gnd_to_pin), release_actions_offset(0)
 {
 }
@@ -58,8 +58,8 @@ void DoublePressButton::timer_action(const Event* ev, void* user_data)
     self->double_press_intermediate = false;
 }
 
-DoublePressButton::DoublePressButton(uint8_t gpio_pin, uint32_t window_ms, bool gnd_to_pin, void* user_data)
-    : Button(gpio_pin, gnd_to_pin, user_data), press_window_ms(window_ms), press_window_timer(CountdownTimer(this))
+DoublePressButton::DoublePressButton(uint8_t gpio_pin, uint32_t window_ms, bool gnd_to_pin, uint32_t debounce_ms, void* user_data)
+    : Button(gpio_pin, gnd_to_pin, debounce_ms, user_data), press_window_ms(window_ms), press_window_timer(CountdownTimer(this))
 {
     static auto func_ptr = &timer_action;
     press_window_timer.SetActions(&func_ptr, 1);
@@ -98,8 +98,8 @@ void TriplePressButton::timer_action(const Event* ev, void* user_data)
     self->double_press_intermediate = false;
 }
 
-TriplePressButton::TriplePressButton(uint8_t gpio_pin, uint32_t window_ms, bool gnd_to_pin, void* user_data)
-    : DoublePressButton(gpio_pin, window_ms, gnd_to_pin, user_data)
+TriplePressButton::TriplePressButton(uint8_t gpio_pin, uint32_t window_ms, bool gnd_to_pin, uint32_t debounce_ms, void* user_data)
+    : DoublePressButton(gpio_pin, window_ms, gnd_to_pin, debounce_ms, user_data)
 {
     static auto func_ptr = &timer_action;
     press_window_timer.SetActions(&func_ptr, 1);
@@ -138,8 +138,8 @@ void TriplePressButton::HandleIRQ(uint32_t events_triggered_mask)
     }
 }
 
-StickyButton::StickyButton(uint8_t gpio_pin, const GPIODevice* conditional_devices, size_t conditional_device_count, bool gnd_to_pin, void* user_data)
-    : Button(gpio_pin, gnd_to_pin, user_data), conditional_devices(conditional_devices), conditional_device_count(conditional_device_count)
+StickyButton::StickyButton(uint8_t gpio_pin, const GPIODevice* conditional_devices, size_t conditional_device_count, bool gnd_to_pin, uint32_t debounce_ms, void* user_data)
+    : Button(gpio_pin, gnd_to_pin, debounce_ms, user_data), conditional_devices(conditional_devices), conditional_device_count(conditional_device_count)
 {
 }
 

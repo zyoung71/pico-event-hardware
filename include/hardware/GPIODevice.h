@@ -2,6 +2,8 @@
 
 #include "../event/Event.h"
 
+#include <util/Debounce.h>
+
 #include <pico/stdlib.h>
 
 enum class Pull
@@ -46,4 +48,15 @@ public:
     }
 
     virtual bool IsActivated() const;
+};
+
+class GPIODeviceDebounce : public GPIODevice
+{
+protected:
+    Debounce debouncer;
+
+    virtual void HandleIRQ(uint32_t events_triggered_mask) override;
+
+public:
+    GPIODeviceDebounce(uint8_t gpio_pin, Pull pull, uint32_t event_mask, uint32_t debounce_ms, void* user_data = nullptr);
 };

@@ -3,7 +3,7 @@
 #include "GPIODevice.h"
 #include "Timer.h"
 
-class Button : public GPIODevice
+class Button : public GPIODeviceDebounce
 {
 private:
     void Dispatch(const Event* ev) const override;
@@ -16,7 +16,7 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    Button(uint8_t gpio_pin, bool gnd_to_pin = false, void* user_data = nullptr);
+    Button(uint8_t gpio_pin, bool gnd_to_pin = false, uint32_t debounce_ms = 50, void* user_data = nullptr);
     virtual ~Button() = default;
 
     void SetPressAndReleaseActions(CallbackAction* press_actions, size_t press_count,
@@ -49,7 +49,7 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    DoublePressButton(uint8_t gpio_pin, uint32_t window_ms = 500, bool gnd_to_pin = false, void* user_data = nullptr);
+    DoublePressButton(uint8_t gpio_pin, uint32_t window_ms = 500, bool gnd_to_pin = false, uint32_t debounce_ms = 50, void* user_data = nullptr);
     virtual ~DoublePressButton() = default;
 
     void SetDoublePressActions(CallbackAction* double_press_actions, size_t count);
@@ -73,7 +73,7 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    TriplePressButton(uint8_t gpio_pin, uint32_t window_ms = 500, bool gnd_to_pin = false, void* user_data = nullptr);
+    TriplePressButton(uint8_t gpio_pin, uint32_t window_ms = 500, bool gnd_to_pin = false, uint32_t debounce_ms = 50, void* user_data = nullptr);
     virtual ~TriplePressButton() = default;
 
     void SetTriplePressActions(CallbackAction* triple_press_actions, size_t count);
@@ -88,6 +88,6 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    StickyButton(uint8_t gpio_pin, const GPIODevice* conditional_devices, size_t conditional_device_count, bool gnd_to_pin = false, void* user_data = nullptr);
+    StickyButton(uint8_t gpio_pin, const GPIODevice* conditional_devices, size_t conditional_device_count, bool gnd_to_pin = false, uint32_t debounce_ms = 50, void* user_data = nullptr);
 
 };
