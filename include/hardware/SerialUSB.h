@@ -40,6 +40,11 @@ private:
 public:
     SerialUSBDetector(void* user_data = nullptr);
 
+    USBConnectionStatus GetContinuousStatus() const
+    {
+        return usb_stat;
+    }
+
     friend void tud_mount_cb(void);
     friend void tud_umount_cb(void);
     friend void tud_suspend_cb(bool remote_wakeup_en);
