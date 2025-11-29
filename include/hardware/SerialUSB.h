@@ -34,6 +34,14 @@ public:
 // Simple event source to detect the physical port.
 class SerialUSBDetector : public EventSource
 {
+private:
+    USBConnectionStatus usb_stat;    
+
 public:
     SerialUSBDetector(void* user_data = nullptr);
+
+    friend void tud_mount_cb(void);
+    friend void tud_umount_cb(void);
+    friend void tud_suspend_cb(bool remote_wakeup_en);
+    friend void tud_resume_cb(void);
 };
