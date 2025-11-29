@@ -59,4 +59,5 @@ protected:
 
 public:
     GPIODeviceDebounce(uint8_t gpio_pin, Pull pull, uint32_t event_mask, uint32_t debounce_ms, void* user_data = nullptr);
+    virtual ~GPIODeviceDebounce() = default;
 };
