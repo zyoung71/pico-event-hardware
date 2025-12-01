@@ -40,10 +40,6 @@ void serial_action(const Event* ev, void* user_data)
 
             source->SendCommandOverUSB(Command("__cmd__", "ready")); // Ready for data to be sent.
             SerialUSB::serial_status = WORKING_READ;
-
-            size_t bytes_written;
-            char buff[chunk];
-            comms_serial_try_read_buff_over_usb_quick(buff, chunk);
         }
         
     }
@@ -126,6 +122,8 @@ int main()
     constexpr size_t chunk = 32;
     char rx[chunk];
     char tx[chunk];
+    size_t bytes_read = 0;
+    size_t this_bytes_read = 0;
 
 #ifdef RUN_EXAMPLE_1
     while (1)
@@ -136,10 +134,10 @@ int main()
         // Check serial port.
         serial_usb.DetectCommandsOverUSB();
 
-
         if (SerialUSB::serial_status == WORKING_READ)
         {
-            comms_serial_try_read_buff_over_usb_quick(rx, chunk);
+            comms_serial_try_read_buff_over_usb_quick(rx, chunk, &this_bytes_read);
+            bytes_read += this_bytes_read;
             rx[chunk - 1] = '\0'; // Obviously do not do this for data transfers.
             printf("Read buffer chunk: %s\n", rx);
         }

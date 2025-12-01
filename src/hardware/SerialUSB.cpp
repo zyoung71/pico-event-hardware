@@ -23,7 +23,7 @@ bool SerialUSB::DetectCommandsOverUSB()
         return false;
 
     char buff[max_command_length];
-    if (comms_serial_try_read_text_line_over_usb(buff, max_command_length) != COMMS_OK)
+    if (comms_serial_try_read_text_line_over_usb(buff, max_command_length, nullptr) != COMMS_OK)
         return false;
     
     // If any prefix is found, push onto queue.
