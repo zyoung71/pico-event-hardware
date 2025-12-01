@@ -52,8 +52,8 @@ CommandEvent::CommandEvent(const EventSource* source, Command&& cmd)
 {
 }
 
-USBUpdateEvent::USBUpdateEvent(const EventSource* source, USBConnectionStatus connection_status)
-    : Event(source), connection_status(connection_status)
+USBUpdateEvent::USBUpdateEvent(const EventSource* source, USBUpdateEventType event_type)
+    : Event(source), event_type(event_type)
 {
 }
 

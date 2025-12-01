@@ -1,32 +1,41 @@
 #pragma once
 
-#include <cstdarg>
-#include <string>
+#include <util/ArrayView.h>
 
-static constexpr size_t max_command_length = 256;
+static constexpr size_t max_command_segment_length = 64;
+static constexpr size_t max_command_length = max_command_segment_length * 3;
 
 struct Command
 {
-    const std::string command_prefix;
-    const std::string command_name;
+    char command_prefix[max_command_segment_length];
+    char command_name[max_command_segment_length];
+    char command_arguments[max_command_segment_length];
 
-    // The receiver should know what arguments are passed in.
-    // It is treated as a string here.
-    std::string command_arguments;
+    // All commands are terminated by a new-line character.
+    char full_command[max_command_length];
 
-    const char* full_command;
+    Command(const ArrayView<char>& prefix, const ArrayView<char>& name, const ArrayView<char>& arguments, const ArrayView<char>& full_command);
+    Command(const ArrayView<char>& prefix, const ArrayView<char>& name, const ArrayView<char>& arguments);
+    Command(const ArrayView<char>& prefix, const ArrayView<char>& name);
 
-    Command(const std::string& prefix, const std::string& cmd_name, const std::string& arguments, const char* full_command);
-    Command(const std::string& prefix, const std::string& cmd_name);
+    Command(const char* prefix, const char* name, const char* arguments, const char* full_command);
+    Command(const char* prefix, const char* name, const char* arguments);
+    Command(const char* prefix, const char* name);
 
     // None
     Command();
 
     void ArgPrint(const char* format, ...);
-    void ArgScan(const char* format, ...);
+    void ArgScan(const char* format, ...) const;
 
     bool operator==(const Command& other) const;
     bool operator!=(const Command& other) const;
 
-    std::string GetFullCommand() const;
+    const char* GetFullCommand() const;
 };
+
+// List of useful commands for bi-directional interactions.
+namespace commands
+{
+    extern const Command command_ready;
+}

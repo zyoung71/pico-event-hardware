@@ -3,6 +3,7 @@
 #include <hardware/Button.h>
 #include <hardware/Timer.h>
 #include <hardware/SerialUSB.h>
+#include <comms/serial_usb.h>
 
 void act0(const Event* ev, void* user_data)
 {
@@ -22,9 +23,29 @@ void timer_action(const Event* ev, void* user_data)
 void serial_action(const Event* ev, void* user_data)
 {
     auto real_event = ev->GetEventAsType<CommandEvent>();
-    if (real_event)
+    auto source = ev->GetSourceAsType<SerialUSB>();
+    if (real_event && source)
     {
-        printf("Serial: %s\n", real_event->GetCommand().GetFullCommand().c_str());
+        const Command& cmd = real_event->GetCommand();
+        printf("Serial: %s\n", cmd.GetFullCommand());
+        
+        // Example: uploading a file. In this case, it is printed to stdout.
+        if (strncmp(cmd.command_name, "uploadfile", max_command_segment_length) == 0)
+        {
+            constexpr size_t chunk = 32;
+
+            size_t file_size;
+            char file_name[max_command_segment_length];
+            cmd.ArgScan("%u \"%s\"", &file_size, file_name);
+
+            source->SendCommandOverUSB(Command("__cmd__", "ready")); // Ready for data to be sent.
+            SerialUSB::serial_status = WORKING_READ;
+
+            size_t bytes_written;
+            char buff[chunk];
+            comms_serial_try_read_buff_over_usb_quick(buff, chunk);
+        }
+        
     }
 }
 
@@ -102,6 +123,10 @@ int main()
     // Signal LED to verify setup was completed.
     gpio_put(PICO_DEFAULT_LED_PIN, true);
 
+    constexpr size_t chunk = 32;
+    char rx[chunk];
+    char tx[chunk];
+
 #ifdef RUN_EXAMPLE_1
     while (1)
     {
@@ -110,6 +135,18 @@ int main()
         
         // Check serial port.
         serial_usb.DetectCommandsOverUSB();
+
+
+        if (SerialUSB::serial_status == WORKING_READ)
+        {
+            comms_serial_try_read_buff_over_usb_quick(rx, chunk);
+            rx[chunk - 1] = '\0'; // Obviously do not do this for data transfers.
+            printf("Read buffer chunk: %s\n", rx);
+        }
+        else if (SerialUSB::serial_status == WORKING_WRITE)
+        {
+            comms_serial_try_write_buff_over_usb_quick(tx, chunk);
+        }
     }
 #endif
     return 0;

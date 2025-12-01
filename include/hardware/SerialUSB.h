@@ -3,10 +3,19 @@
 #include <event/Event.h>
 #include <event/Command.h>
 
+#include <tusb.h>
+
 enum SerialStatus
 {
     IDLE,
-    WORKING
+    WORKING_READ,
+    WORKING_WRITE
+};
+
+enum USBConnectionStatus
+{
+    DOWN = 0,
+    UP = 1
 };
 
 class SerialUSBDetector;

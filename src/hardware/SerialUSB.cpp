@@ -19,11 +19,11 @@ SerialUSB::SerialUSB(const char* cause_of_events, void* user_data)
 
 bool SerialUSB::DetectCommandsOverUSB()
 {
-    if (serial_status == WORKING)
+    if (serial_status == WORKING_READ || serial_status == WORKING_WRITE)
         return false;
 
     char buff[max_command_length];
-    if (comms_serial_try_read_line_over_usb(buff, max_command_length) != COMMS_OK)
+    if (comms_serial_try_read_text_line_over_usb(buff, max_command_length) != COMMS_OK)
         return false;
     
     // If any prefix is found, push onto queue.
@@ -45,14 +45,10 @@ bool SerialUSB::DetectCommandsOverUSB()
 
 bool SerialUSB::SendCommandOverUSB(const Command& cmd)
 {
-    if (serial_status == WORKING)
+    if (serial_status == WORKING_READ || serial_status == WORKING_WRITE)
         return false;
 
-    char buff[max_command_length];
-    snprintf(buff, max_command_length - 1, "%s %s %s", cmd.command_prefix, cmd.command_name.c_str(), cmd.command_arguments.c_str());
-    buff[max_command_length - 1] = '\n';
-
-    return comms_serial_try_write_line_over_usb(buff, max_command_length) > 0;
+    return comms_serial_try_write_text_line_over_usb(cmd.full_command, max_command_length) > 0;
 }
 
 SerialUSBDetector::SerialUSBDetector(void* user_data)

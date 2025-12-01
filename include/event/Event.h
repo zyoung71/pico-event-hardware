@@ -102,25 +102,26 @@ public:
 
 };
 
-enum USBConnectionStatus
-{
-    DISCONNECTED,
-    CONNECTED,
-    SUSPENDED,
-    RESUMED
-};
-
 class USBUpdateEvent : public Event
 {
+public:
+    enum USBUpdateEventType
+    {
+        CONNECTED,
+        DISCONNECTED,
+        SUSPENDED,
+        RESUMED
+    };
+
 protected:
-    USBConnectionStatus connection_status;
+    USBUpdateEventType event_type;
 
 public:
-    USBUpdateEvent(const EventSource* source, USBConnectionStatus connection_status);
+    USBUpdateEvent(const EventSource* source, USBUpdateEventType event_type);
 
-    inline USBConnectionStatus GetConnectionStatus() const
+    inline USBUpdateEventType GetConnectionStatus() const
     {
-        return connection_status;
+        return event_type;
     }
 };
 
