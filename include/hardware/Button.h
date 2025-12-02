@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GPIODevice.h"
-#include "Timer.h"
 
 class Button : public GPIODeviceDebounce
 {
@@ -35,16 +34,13 @@ public:
 
 class DoublePressButton : public Button
 {
-private:
-    static void timer_action(const Event* ev, void* user_data);
-
 protected:
     std::unique_ptr<CallbackAction[]> double_press_actions;
     size_t double_press_action_count;
     bool double_press_intermediate; // switched on when button is pressed once, awaiting the second
 
-    uint32_t press_window_ms;
-    CountdownTimer press_window_timer;
+    absolute_time_t press_window_us;
+    absolute_time_t press_window_curr_time;
 
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
@@ -56,15 +52,12 @@ public:
 
     inline void SetPressTimeWindowMs(absolute_time_t window_ms)
     {
-        press_window_ms = window_ms;
+        press_window_us = window_ms * 1000ULL;
     }
 };
 
 class TriplePressButton : public DoublePressButton
 {
-private:
-    static void timer_action(const Event* ev, void* user_data);
-
 protected:
     std::unique_ptr<CallbackAction[]> triple_press_actions;
     size_t triple_press_action_count;

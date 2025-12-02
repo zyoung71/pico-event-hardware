@@ -78,8 +78,11 @@ void EventSource::Dispatch(const Event* ev) const
 
 void EventSource::SetActions(CallbackAction* all_actions, size_t action_count)
 {
+    if (action_count == 0)
+        return;
+
     this->event_actions = std::make_unique<CallbackAction[]>(action_count);
-    std::copy(all_actions, all_actions + action_count, this->event_actions.get());
+    std::copy(all_actions, all_actions + action_count - 1, this->event_actions.get());
     this->action_count = action_count;
 }
 

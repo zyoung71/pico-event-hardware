@@ -1,5 +1,4 @@
 #include <hardware/Button.h>
-#include <hardware/Timer.h>
 
 Button::Button(uint8_t gpio_pin, bool gnd_to_pin, uint32_t debounce_ms, void* user_data)
     : GPIODeviceDebounce(gpio_pin, gnd_to_pin ? Pull::UP : Pull::DOWN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, debounce_ms, user_data),
@@ -52,17 +51,9 @@ bool Button::IsActivated() const
     return gnd_to_pin ? !gpio_get(gpio_pin) : gpio_get(gpio_pin);
 }
 
-void DoublePressButton::timer_action(const Event* ev, void* user_data)
-{
-    DoublePressButton* self = (DoublePressButton*)user_data;
-    self->double_press_intermediate = false;
-}
-
 DoublePressButton::DoublePressButton(uint8_t gpio_pin, uint32_t window_ms, bool gnd_to_pin, uint32_t debounce_ms, void* user_data)
-    : Button(gpio_pin, gnd_to_pin, debounce_ms, user_data), press_window_ms(window_ms), press_window_timer(CountdownTimer(this))
+    : Button(gpio_pin, gnd_to_pin, debounce_ms, user_data), press_window_us(window_ms * 1000ULL), press_window_curr_time(to_us_since_boot(get_absolute_time()))
 {
-    static auto func_ptr = &timer_action;
-    press_window_timer.SetActions(&func_ptr, 1);
 }
 
 void DoublePressButton::SetDoublePressActions(CallbackAction* double_press_actions, size_t count)
@@ -75,34 +66,32 @@ void DoublePressButton::HandleIRQ(uint32_t events_triggeted_mask)
 {
     if (event_mask & events_triggeted_mask)
     {
+        absolute_time_t now = to_us_since_boot(get_absolute_time());
+        if (press_window_curr_time - now >= press_window_us)
+        {
+            double_press_intermediate = false;
+        }
+
         if (double_press_intermediate)
         {
-            press_window_timer.End();
+            double_press_intermediate = false;
             Event* ev = new ButtonEvent(this, events_triggeted_mask, 2);
             queue_try_add(&Event::event_queue, &ev);
         }
         else
         {
+            double_press_intermediate = true;
             Event* ev = new ButtonEvent(this, events_triggeted_mask, 1);
             queue_try_add(&Event::event_queue, &ev);
-            double_press_intermediate = true;
-            press_window_timer.Start(press_window_ms);
         }
-    }
-}
 
-void TriplePressButton::timer_action(const Event* ev, void* user_data)
-{
-    TriplePressButton* self = (TriplePressButton*)user_data;
-    self->triple_press_intermediate = false;
-    self->double_press_intermediate = false;
+        press_window_curr_time = to_us_since_boot(get_absolute_time());
+    }
 }
 
 TriplePressButton::TriplePressButton(uint8_t gpio_pin, uint32_t window_ms, bool gnd_to_pin, uint32_t debounce_ms, void* user_data)
     : DoublePressButton(gpio_pin, window_ms, gnd_to_pin, debounce_ms, user_data)
 {
-    static auto func_ptr = &timer_action;
-    press_window_timer.SetActions(&func_ptr, 1);
 }
 
 void TriplePressButton::SetTriplePressActions(CallbackAction* triple_press_actions, size_t count)
@@ -115,26 +104,34 @@ void TriplePressButton::HandleIRQ(uint32_t events_triggered_mask)
 {
     if (event_mask & events_triggered_mask)
     {
+        absolute_time_t now = to_us_since_boot(get_absolute_time());
+        if (press_window_curr_time - now >= press_window_us)
+        {
+            triple_press_intermediate = false;
+            double_press_intermediate = false;
+        }
+        
         if (triple_press_intermediate) // On third press
         {
-            press_window_timer.End();
+            triple_press_intermediate = false;
+            double_press_intermediate = false;
             Event* ev = new ButtonEvent(this, events_triggered_mask, 3);
             queue_try_add(&Event::event_queue, &ev);
         }
         else if (double_press_intermediate) // On second press
         {
+            triple_press_intermediate = true;
             Event* ev = new ButtonEvent(this, events_triggered_mask, 2);
             queue_try_add(&Event::event_queue, &ev);
-            triple_press_intermediate = true;
-            press_window_timer.Start(press_window_ms);
         }
         else // On first press
         {
+            double_press_intermediate = true;
             Event* ev = new ButtonEvent(this, events_triggered_mask, 1);
             queue_try_add(&Event::event_queue, &ev);
-            double_press_intermediate = true;
-            press_window_timer.Start(press_window_ms);
         }
+
+        press_window_curr_time = to_us_since_boot(get_absolute_time());
     }
 }
 
