@@ -2,7 +2,8 @@
 
 #include "Command.h"
 
-#include <memory>
+#include <vector>
+#include <unordered_map>
 
 #include <pico/util/queue.h>
 
@@ -130,27 +131,34 @@ class EventSource
 private:
     virtual void Dispatch(const Event* event) const;
 
+    static int assign_id;
+
 public:
     typedef void (*CallbackAction)(const Event* event, void* user_data);
 
+private:
+    struct Callback
+    {
+        CallbackAction action;
+        void* user_data;
+
+        bool operator==(const Callback& other) const;
+    };
+
 protected:
-    std::unique_ptr<CallbackAction[]> event_actions;
-    size_t action_count;
-    void* user_data;
+    std::vector<Callback> event_actions;
+    std::unordered_map<int, Callback> id_table;
     bool is_enabled;
 
     virtual void EnableImpl() {};
     virtual void DisableImpl() {};
 
 public:
-    EventSource(void* user_data = nullptr);
+    EventSource();
     virtual ~EventSource() = default;
 
-    void SetActions(CallbackAction* event_actions, size_t action_count);
-    inline void SetUserData(void* user_data)
-    {
-        this->user_data = user_data;
-    }
+    [[nodiscard]] int AddAction(CallbackAction action, void* user_data = nullptr);
+    void RemoveAction(int id);
 
     void Enable();
     void Disable();
@@ -168,6 +176,6 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) = 0;
 
 public:
-    inline IRQSource(void* user_data = nullptr) : EventSource(user_data) {}
+    inline IRQSource() : EventSource() {}
     virtual ~IRQSource() = default;
 };

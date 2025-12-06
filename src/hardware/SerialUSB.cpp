@@ -5,14 +5,14 @@
 
 SerialStatus SerialUSB::serial_status = IDLE;
 
-SerialUSB::SerialUSB(const char** cause_of_events, size_t causes_count, void* user_data)
-    : EventSource(user_data), causes_of_events(cause_of_events), causes_count(causes_count)
+SerialUSB::SerialUSB(const char** cause_of_events, size_t causes_count)
+    : EventSource(), causes_of_events(cause_of_events), causes_count(causes_count)
 {
     comms_serial_usb_init();
 }
 
-SerialUSB::SerialUSB(const char* cause_of_events, void* user_data)
-    : SerialUSB(&cause_of_events, 1, user_data)
+SerialUSB::SerialUSB(const char* cause_of_events)
+    : SerialUSB(&cause_of_events, 1)
 {
     comms_serial_usb_init();
 }
@@ -51,8 +51,8 @@ bool SerialUSB::SendCommandOverUSB(const Command& cmd)
     return comms_serial_try_write_text_line_over_usb(cmd.full_command, max_command_length) > 0;
 }
 
-SerialUSBDetector::SerialUSBDetector(void* user_data)
-    : EventSource(user_data)
+SerialUSBDetector::SerialUSBDetector()
+    : EventSource()
 {
     if (!serial_usb_detector_instance)
         serial_usb_detector_instance = this;

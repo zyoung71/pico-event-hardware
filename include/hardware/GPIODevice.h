@@ -35,7 +35,7 @@ private:
     static void gpio_callback(uint8_t gpio_pin, uint32_t events_triggered_mask);
 
 public:
-    GPIODevice(uint8_t gpio_pin, Pull pull, uint32_t event_mask, void* user_data = nullptr);
+    GPIODevice(uint8_t gpio_pin, Pull pull, uint32_t event_mask);
     virtual ~GPIODevice();
 
     inline bool IsHigh() const
@@ -58,6 +58,6 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    GPIODeviceDebounce(uint8_t gpio_pin, Pull pull, uint32_t event_mask, uint32_t debounce_ms, void* user_data = nullptr);
+    GPIODeviceDebounce(uint8_t gpio_pin, Pull pull, uint32_t event_mask, uint32_t debounce_ms);
     virtual ~GPIODeviceDebounce() = default;
 };

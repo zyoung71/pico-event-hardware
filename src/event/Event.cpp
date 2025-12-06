@@ -2,6 +2,7 @@
 #include <hardware/Button.h>
 
 #include <cstring>
+#include <algorithm>
 
 queue_t Event::event_queue = {};
 Event::_InitializeEventQueue Event::_initialize_event_queue = Event::_InitializeEventQueue();
@@ -63,27 +64,40 @@ USBUpdateEvent::USBUpdateEvent(const EventSource* source, USBUpdateEventType eve
  * Source implementation begin. 
 */
 
-EventSource::EventSource(void* user_data)
-    : event_actions(nullptr), action_count(0), user_data(user_data), is_enabled(true)
+int EventSource::assign_id = 0;
+
+bool EventSource::Callback::operator==(const EventSource::Callback& other) const
 {
+    return action == other.action && user_data == other.user_data;
+}
+
+EventSource::EventSource()
+    : is_enabled(true)
+{
+    event_actions.reserve(3);
+    id_table.reserve(3);
 }
 
 void EventSource::Dispatch(const Event* ev) const
 {
-    for (size_t i = 0; i < action_count; i++)
+    for (auto&& act : event_actions)
     {
-        event_actions[i](ev, user_data);
+        act.action(ev, act.user_data);
     }
 }
 
-void EventSource::SetActions(CallbackAction* all_actions, size_t action_count)
+int EventSource::AddAction(CallbackAction action, void* user_data)
 {
-    if (action_count == 0)
-        return;
+    int id = assign_id++;
+    event_actions.emplace_back(action, user_data);
+    id_table.emplace(id, event_actions.back());
+    return id;
+}
 
-    this->event_actions = std::make_unique<CallbackAction[]>(action_count);
-    std::copy(all_actions, all_actions + action_count - 1, this->event_actions.get());
-    this->action_count = action_count;
+void EventSource::RemoveAction(int id)
+{
+    std::erase(event_actions, id_table[id]);
+    id_table.erase(id);
 }
 
 void EventSource::Enable()

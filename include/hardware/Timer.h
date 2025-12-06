@@ -11,8 +11,8 @@ protected:
     absolute_time_t us_begintime;
 
 public:
-    inline Timer(void* user_data = nullptr)
-        : EventSource(user_data), us_elapsed(0), us_start(0), us_begintime(0), is_active(false)
+    inline Timer()
+        : EventSource(), us_elapsed(0), us_start(0), us_begintime(0), is_active(false)
     {
     }
     virtual ~Timer() = default;
@@ -63,7 +63,7 @@ protected:
     int id;
 
 public:
-    inline CountdownTimer(void* user_data = nullptr) : Timer(user_data), id(-1) {}
+    inline CountdownTimer() : Timer(), id(-1) {}
     virtual ~CountdownTimer();
 
     virtual void Start(uint32_t ms) override;
@@ -79,7 +79,7 @@ protected:
     repeating_timer_t repeat_timer;
 
 public:
-    inline RepeatingTimer(void* user_data = nullptr) : Timer(user_data) {}
+    inline RepeatingTimer() : Timer() {}
     virtual ~RepeatingTimer();
 
     virtual void Start(uint32_t ms) override;

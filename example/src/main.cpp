@@ -88,33 +88,27 @@ int main()
     // Physical USB detection.
     SerialUSBDetector serial_usb_detector;
 
-    EventSource::CallbackAction actions[] = {&act0, &act1};
-    EventSource::CallbackAction timer_action_arr[] = {&timer_action};
-    EventSource::CallbackAction serial_action_arr[] = {&serial_action};
-    EventSource::CallbackAction serial_detector_action_arr[] = {&serial_detector_action};
-
-    // Sets actions with press actions being the first set of arguments.
-    button0.SetPressAndReleaseActions(actions, 2);
-    button1.SetPressAndReleaseActions(actions, 2);
-    
-    // Sets actions with release actions being the first set of arguments.
-    button2.SetReleaseAndPressActions(actions, 2);
-    button3.SetReleaseAndPressActions(actions, 2);
+    // Set two actions for each button.
+    // All actions return an integer ID that is used to remove the action if needed.
+    // The compiler will warn you if you do not assign an ID.
+    int id0 = button0.AddAction(&act0);
+    int id1 = button0.AddAction(&act1);
+    int id2 = button1.AddAction(&act0);
+    int id3 = button1.AddAction(&act1);
 
     int value = 500;
 
     // Set the timer's actions and pass the constant into the actions.
-    repeat_timer.SetActions(timer_action_arr, 1);
-    repeat_timer.SetUserData(&value);
+    int id4 = repeat_timer.AddAction(&timer_action, &value);  
 
     // Set timer to fire every 3 seconds.
     repeat_timer.Start(3000);
 
     // Set actions for the serial reading detector.
-    serial_usb.SetActions(serial_action_arr, 1);
+    int id5 = serial_usb.AddAction(&serial_action);
 
     // Set actions for the physical serial connection callbacks.
-    serial_usb_detector.SetActions(serial_detector_action_arr, 1);
+    int id6 = serial_usb_detector.AddAction(&serial_detector_action);
 
     // Signal LED to verify setup was completed.
     gpio_put(PICO_DEFAULT_LED_PIN, true);

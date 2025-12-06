@@ -33,8 +33,8 @@ private:
 public:
     static SerialStatus serial_status;
 
-    SerialUSB(const char** causes_of_events, size_t causes_count, void* user_data = nullptr);
-    SerialUSB(const char* cause_of_events, void* user_data = nullptr);
+    SerialUSB(const char** causes_of_events, size_t causes_count);
+    SerialUSB(const char* cause_of_events);
 
     bool DetectCommandsOverUSB();
     bool SendCommandOverUSB(const Command& cmd);
@@ -47,7 +47,7 @@ private:
     USBConnectionStatus usb_stat;    
 
 public:
-    SerialUSBDetector(void* user_data = nullptr);
+    SerialUSBDetector();
 
     USBConnectionStatus GetContinuousStatus() const
     {

@@ -40,6 +40,8 @@ add_subdirectory(../ build)
 
 add_executable(${CMAKE_PROJECT_NAME} src/main.cpp)
 
+add_executable(peh-button src/button.cpp)
+
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
     include
 )
@@ -48,9 +50,17 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     pico-event-hardware
 )
 
-pico_enable_stdio_usb(${CMAKE_PROJECT_NAME} 0)
-pico_enable_stdio_uart(${CMAKE_PROJECT_NAME} 0)
+target_link_libraries(peh-button
+    pico-event-hardware
+)
+
+pico_enable_stdio_usb(${CMAKE_PROJECT_NAME} 1)
+pico_enable_stdio_uart(${CMAKE_PROJECT_NAME} 1)
 pico_add_extra_outputs(${CMAKE_PROJECT_NAME})
+
+pico_enable_stdio_usb(peh-button 1)
+pico_enable_stdio_uart(peh-button 1)
+pico_add_extra_outputs(peh-button)
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/tmp/flash.sh
 "#!/bin/bash

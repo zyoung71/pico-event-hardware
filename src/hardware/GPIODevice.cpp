@@ -3,9 +3,10 @@
 GPIODevice::_GPIOEnableCallback::_GPIOEnableCallback()
 {
     gpio_set_irq_callback((gpio_irq_callback_t)&gpio_callback);
+    irq_set_enabled(IO_IRQ_BANK0, true);
 }
 
-GPIODevice::_GPIOEnableCallback GPIODevice::_callback_enable_inst;
+GPIODevice::_GPIOEnableCallback GPIODevice::_callback_enable_inst = GPIODevice::_GPIOEnableCallback();
 
 GPIODevice* GPIODevice::instances[30] = {};
 
@@ -17,8 +18,8 @@ void GPIODevice::gpio_callback(uint8_t gpio_pin, uint32_t events_triggered_mask)
     }
 }
 
-GPIODevice::GPIODevice(uint8_t gpio_pin, Pull pull, uint32_t event_mask, void* user_data)
-    : IRQSource(user_data), gpio_pin(gpio_pin), event_mask(event_mask)
+GPIODevice::GPIODevice(uint8_t gpio_pin, Pull pull, uint32_t event_mask)
+    : IRQSource(), gpio_pin(gpio_pin), event_mask(event_mask)
 {
     gpio_pin = gpio_pin > 30 ? 30 : gpio_pin;
     instances[gpio_pin] = this;
@@ -64,13 +65,19 @@ bool GPIODevice::IsActivated() const
     return gpio_get(gpio_pin);
 }
 
-GPIODeviceDebounce::GPIODeviceDebounce(uint8_t gpio_pin, Pull pull, uint32_t event_mask, uint32_t debounce_ms, void* user_data)
-    : GPIODevice(gpio_pin, pull, event_mask, user_data), debouncer(debounce_ms)
+GPIODeviceDebounce::GPIODeviceDebounce(uint8_t gpio_pin, Pull pull, uint32_t event_mask, uint32_t debounce_ms)
+    : GPIODevice(gpio_pin, pull, event_mask), debouncer(debounce_ms)
 {
 }
 
 void GPIODeviceDebounce::HandleIRQ(uint32_t events_triggered_mask)
 {
-    if (debouncer.Allow())
-        GPIODevice::HandleIRQ(events_triggered_mask);
+    if (event_mask & events_triggered_mask)
+    {
+        if (debouncer.Allow())
+        {
+            Event* ev = new GPIOEvent(this, events_triggered_mask);   
+            queue_try_add(&Event::event_queue, &ev);
+        }
+    }
 }
