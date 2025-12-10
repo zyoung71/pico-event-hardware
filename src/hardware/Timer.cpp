@@ -25,7 +25,7 @@ void CountdownTimer::Start(uint32_t ms)
     if (id >= 0 || is_active)
     {
         End();
-        Start(ms);
+        return Start(ms);
     }
 
     us_begintime = ms * 1000ULL;
@@ -67,7 +67,7 @@ void RepeatingTimer::Start(uint32_t ms)
     if (is_active)
     {
         End();
-        Start(ms);
+        return Start(ms);
     }
 
     us_begintime = ms * 1000ULL;
