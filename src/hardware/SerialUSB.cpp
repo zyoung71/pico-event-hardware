@@ -30,7 +30,7 @@ bool SerialUSB::DetectCommandsOverUSB()
     for (size_t i = 0; i < causes_count; i++)
     {
         const char* cause = causes_of_events[i];
-        if (strncmp(cause, buff, max_command_length) == 0)
+        if (strncmp(cause, buff, strlen(cause)) == 0)
         {
             char cmd_name_buff[max_command_segment_length], cmd_args_buff[max_command_segment_length];
             sscanf(buff + strlen(cause), "%s %s", cmd_name_buff, cmd_args_buff);
