@@ -8,6 +8,7 @@ if (NOT TARGET pico-event-hardware)
         src/hardware/Timer.cpp
         src/hardware/Button.cpp
         src/hardware/SerialUSB.cpp
+        src/hardware/AnalogDevice.cpp
     )
     
     add_subdirectory(lib/pico-util)
@@ -20,6 +21,7 @@ if (NOT TARGET pico-event-hardware)
     target_link_libraries(pico-event-hardware
         pico-util
         pico-comms
+        hardware_adc
     )
     
 endif()

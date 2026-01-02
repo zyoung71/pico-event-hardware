@@ -78,7 +78,8 @@ void Command::ArgPrint(const char* format, ...)
 
     buff[len - 1] = '\0';
     strncpy(command_arguments, buff, len);
-    snprintf(full_command, max_command_length, "%s %s %s", command_name, command_prefix, command_arguments);
+    // No space between first two to allow prefixes such as "/command" or "-command"
+    snprintf(full_command, max_command_length, "%s%s %s", command_name, command_prefix, command_arguments);
     strncat(full_command, "\n", max_command_length);
 }
 
