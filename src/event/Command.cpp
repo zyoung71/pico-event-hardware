@@ -43,7 +43,7 @@ Command::Command(const char* prefix, const char* name, const char* args)
     strncpy(command_prefix, prefix, max_command_segment_length);
     strncpy(command_name, name, max_command_segment_length);
     strncpy(command_arguments, args, max_command_segment_length);
-    snprintf(full_command, max_command_length, "%s %s %s", command_prefix, command_name, command_arguments);
+    snprintf(full_command, max_command_length, "%s%s \"%s\"", command_prefix, command_name, command_arguments);
     strncat(full_command, "\n", max_command_length);
 }
 
@@ -52,7 +52,7 @@ Command::Command(const char* prefix, const char* name)
     strncpy(command_prefix, prefix, max_command_segment_length);
     strncpy(command_name, name, max_command_segment_length);
     memset(command_arguments, 0, max_command_segment_length);
-    snprintf(full_command, max_command_length, "%s %s", command_prefix, command_name);
+    snprintf(full_command, max_command_length, "%s%s", command_prefix, command_name);
     strncat(full_command, "\n", max_command_length);
 }
 
@@ -79,7 +79,7 @@ void Command::ArgPrint(const char* format, ...)
     buff[len - 1] = '\0';
     strncpy(command_arguments, buff, len);
     // No space between first two to allow prefixes such as "/command" or "-command"
-    snprintf(full_command, max_command_length, "%s%s %s", command_name, command_prefix, command_arguments);
+    snprintf(full_command, max_command_length, "%s%s \"%s\"", command_name, command_prefix, command_arguments);
     strncat(full_command, "\n", max_command_length);
 }
 

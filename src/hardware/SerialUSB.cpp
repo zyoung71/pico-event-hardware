@@ -40,7 +40,7 @@ bool SerialUSB::DetectCommandsOverUSB()
         if (strncmp(cause, buff, strlen(cause)) == 0)
         {
             char cmd_name_buff[max_command_segment_length], cmd_args_buff[max_command_segment_length];
-            sscanf(buff + strlen(cause), "%s %s", cmd_name_buff, cmd_args_buff);
+            sscanf(buff + strlen(cause), "%63s \"%63[^\"]\"", cmd_name_buff, cmd_args_buff);
 
             Event* ev = new CommandEvent(this, Command(cause, cmd_name_buff, cmd_args_buff, buff));
             queue_try_add(&Event::event_queue, &ev);
