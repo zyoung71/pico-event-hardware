@@ -33,8 +33,9 @@ private:
 public:
     static SerialStatus serial_status;
 
-    SerialUSB(const char** causes_of_events, size_t causes_count);
-    SerialUSB(const char* cause_of_events);
+    SerialUSB(const char** causes, size_t causes_count);
+    SerialUSB(const char* cause);
+    ~SerialUSB();
 
     bool DetectCommandsOverUSB();
     bool SendCommandOverUSB(const Command& cmd);
