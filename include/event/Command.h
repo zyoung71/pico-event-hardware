@@ -32,6 +32,8 @@ struct Command
     bool operator!=(const Command& other) const;
 
     const char* GetFullCommand() const;
+
+    bool Is(const char* target_command_name) const;
 };
 
 // List of useful commands for bi-directional interactions.

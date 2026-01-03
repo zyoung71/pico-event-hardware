@@ -107,3 +107,8 @@ const char* Command::GetFullCommand() const
 {
     return full_command;
 }
+
+bool Command::Is(const char* target_command_name) const
+{
+    return strncmp(command_name, target_command_name, max_command_segment_length) == 0;
+}
