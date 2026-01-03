@@ -8,7 +8,7 @@ SerialStatus SerialUSB::serial_status = IDLE;
 SerialUSB::SerialUSB(const char** causes, size_t causes_count)
     : EventSource(), causes_of_events(new const char*[causes_count]), causes_count(causes_count)
 {
-    memcpy(causes_of_events, causes, causes_count);
+    memcpy(causes_of_events, causes, causes_count * sizeof(char*));
     comms_serial_usb_init();
 }
 
