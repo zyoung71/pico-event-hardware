@@ -30,7 +30,7 @@ int main()
     AnalogDevice abutton5(26, 2200);
     AnalogDevice abutton6(26, 2800);
 
-    ResistorLadder<AnalogDevice, 6> button_ladder(18, Pull::UP, GPIO_IRQ_EDGE_FALL);
+    ResistorLadder<6> button_ladder(18, Pull::UP, GPIO_IRQ_EDGE_FALL);
     button_ladder[0] = &abutton1;
     button_ladder[1] = &abutton2;
     button_ladder[2] = &abutton3;

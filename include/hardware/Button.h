@@ -10,7 +10,7 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    Button(uint8_t gpio_pin, bool gnd_to_pin = false, uint32_t debounce_ms = 50);
+    Button(uint8_t gpio_pin, bool gnd_to_pin = true, uint32_t debounce_ms = 50);
     virtual ~Button() = default;
 
     inline bool IsWiredToGround() const
@@ -32,7 +32,7 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    DoublePressButton(uint8_t gpio_pin, uint32_t window_ms = 500, bool gnd_to_pin = false, uint32_t debounce_ms = 50);
+    DoublePressButton(uint8_t gpio_pin, uint32_t window_ms = 500, bool gnd_to_pin = true, uint32_t debounce_ms = 50);
     virtual ~DoublePressButton() = default;
 
     inline void SetPressTimeWindowMs(absolute_time_t window_ms)
@@ -49,7 +49,7 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    TriplePressButton(uint8_t gpio_pin, uint32_t window_ms = 500, bool gnd_to_pin = false, uint32_t debounce_ms = 50);
+    TriplePressButton(uint8_t gpio_pin, uint32_t window_ms = 500, bool gnd_to_pin = true, uint32_t debounce_ms = 50);
     virtual ~TriplePressButton() = default;
 };
 
@@ -62,6 +62,6 @@ protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) override;
 
 public:
-    StickyButton(uint8_t gpio_pin, const GPIODevice* conditional_devices, size_t conditional_device_count, bool gnd_to_pin = false, uint32_t debounce_ms = 50);
+    StickyButton(uint8_t gpio_pin, const GPIODevice* conditional_devices, size_t conditional_device_count, bool gnd_to_pin = true, uint32_t debounce_ms = 50);
 
 };
