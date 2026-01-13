@@ -157,7 +157,7 @@ public:
     EventSource();
     virtual ~EventSource() = default;
 
-    [[nodiscard]] int AddAction(CallbackAction action, void* user_data = nullptr);
+    [[nodiscard]] virtual int AddAction(CallbackAction action, void* user_data = nullptr);
     void RemoveAction(int id);
 
     void Enable();

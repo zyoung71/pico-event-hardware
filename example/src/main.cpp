@@ -4,6 +4,7 @@
 #include <hardware/Timer.h>
 #include <hardware/SerialUSB.h>
 #include <comms/serial_usb.h>
+#include <software/Loop.h>
 
 void act0(const Event* ev, void* user_data)
 {
@@ -54,6 +55,11 @@ void serial_detector_action(const Event* ev, void* user_data)
     }
 }
 
+void loop_action(const Event* ev, void* user_data)
+{
+    printf("Loop called.\n");
+}
+
 #define RUN_EXAMPLE_1
 
 int main()
@@ -88,6 +94,11 @@ int main()
     // Physical USB detection.
     SerialUSBDetector serial_usb_detector;
 
+    // A loop-until object that automatically adds itself to the queue again if the condition provided is not met.
+    Loop loop = Loop([](void* ptr){
+        return true; // will break out after one event call
+    });
+
     // Set two actions for each button.
     // All actions return an integer ID that is used to remove the action if needed.
     // The compiler will warn you if you do not assign an ID.
@@ -109,6 +120,9 @@ int main()
 
     // Set actions for the physical serial connection callbacks.
     int id6 = serial_usb_detector.AddAction(&serial_detector_action);
+
+    // Set actins for looping object.
+    int id7 = loop.AddAction(&loop_action);
 
     // Signal LED to verify setup was completed.
     gpio_put(PICO_DEFAULT_LED_PIN, true);
