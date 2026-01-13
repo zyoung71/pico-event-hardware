@@ -136,7 +136,7 @@ private:
 public:
     typedef void (*CallbackAction)(const Event* event, void* user_data);
 
-private:
+protected:
     struct Callback
     {
         CallbackAction action;

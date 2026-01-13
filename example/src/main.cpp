@@ -60,6 +60,11 @@ void loop_action(const Event* ev, void* user_data)
     printf("Loop called.\n");
 }
 
+void loop_break_action(const Event* ev, void* user_data)
+{
+    printf("Broke loop.\n");
+}
+
 #define RUN_EXAMPLE_1
 
 int main()
@@ -121,8 +126,11 @@ int main()
     // Set actions for the physical serial connection callbacks.
     int id6 = serial_usb_detector.AddAction(&serial_detector_action);
 
-    // Set actins for looping object.
+    // Set actions for looping object.
     int id7 = loop.AddAction(&loop_action);
+
+    // Set actions for when the loop is broken.
+    int id8 = loop.AddBreakAction(&loop_break_action);
 
     // Signal LED to verify setup was completed.
     gpio_put(PICO_DEFAULT_LED_PIN, true);
