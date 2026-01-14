@@ -1,6 +1,7 @@
 #pragma once
 
 #include <util/ArrayView.h>
+#include "Event.h"
 
 static constexpr size_t max_command_segment_length = 64;
 static constexpr size_t max_command_length = max_command_segment_length * 3;
@@ -34,6 +35,21 @@ struct Command
     const char* GetFullCommand() const;
 
     bool Is(const char* target_command_name) const;
+};
+
+class CommandEvent : public Event
+{
+protected:
+    Command command;
+
+public:
+    CommandEvent(EventSource* source, Command&& cmd);
+
+    inline const Command& GetCommand() const
+    {
+        return command;
+    }
+
 };
 
 // List of useful commands for bi-directional interactions.

@@ -3,6 +3,11 @@
 
 #include <cstring>
 
+USBUpdateEvent::USBUpdateEvent(EventSource* source, USBUpdateEventType event_type)
+    : Event(source), event_type(event_type)
+{
+}
+
 SerialStatus SerialUSB::serial_status = IDLE;
 
 SerialUSB::SerialUSB(const char** causes, size_t causes_count)

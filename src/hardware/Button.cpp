@@ -1,5 +1,16 @@
 #include <hardware/Button.h>
 
+ButtonEvent::ButtonEvent(EventSource* source, uint32_t events_triggered_mask, uint32_t press_iteration)
+    : GPIOEvent(source, events_triggered_mask), press_iteration(press_iteration)    
+{
+}
+
+bool ButtonEvent::WasPressed() const
+{
+    const Button* button = (Button*)source;
+    return events_triggered_mask & (button->IsWiredToGround() ? GPIO_IRQ_EDGE_FALL : GPIO_IRQ_EDGE_RISE);
+}
+
 Button::Button(uint8_t gpio_pin, bool gnd_to_pin, uint32_t debounce_ms)
     : GPIODeviceDebounce(gpio_pin, gnd_to_pin ? Pull::UP : Pull::DOWN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, debounce_ms),
     gnd_to_pin(gnd_to_pin)

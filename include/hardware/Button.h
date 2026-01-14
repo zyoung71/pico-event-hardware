@@ -2,6 +2,21 @@
 
 #include "GPIODevice.h"
 
+class ButtonEvent : public GPIOEvent
+{
+protected:
+    uint32_t press_iteration;
+public:
+    ButtonEvent(EventSource* source, uint32_t events_triggered_mask, uint32_t press_iteration = 1);
+
+    inline uint32_t GetPressIteration() const
+    {
+        return press_iteration;
+    }
+
+    bool WasPressed() const;
+};
+
 class Button : public GPIODeviceDebounce
 {
 protected:

@@ -1,7 +1,7 @@
 #include <hardware/AnalogDevice.h>
 #include <hardware/adc.h>
 
-AnalogEvent::AnalogEvent(const EventSource* source, uint8_t adc_pin, uint16_t adc_value)
+AnalogEvent::AnalogEvent(EventSource* source, uint8_t adc_pin, uint16_t adc_value)
     : Event(source), adc_value(adc_value)
 {
 }

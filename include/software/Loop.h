@@ -32,4 +32,6 @@ public:
     [[nodiscard]] int AddAction(CallbackAction action, void* user_data = nullptr) override;
     [[nodiscard]] int AddBreakAction(CallbackAction action, void* user_data = nullptr);
     void RemoveBreakAction(int id);
+
+    void StartLoop();
 };

@@ -6,6 +6,20 @@
 
 #include <pico/stdlib.h>
 
+class GPIOEvent : public Event
+{
+protected:
+    uint32_t events_triggered_mask;
+
+public:
+    GPIOEvent(EventSource* source, uint32_t events_triggered_mask);
+
+    inline uint32_t GetEventsTriggeredMask() const
+    {
+        return events_triggered_mask;
+    }
+};
+
 enum class Pull
 {
     NONE,

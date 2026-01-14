@@ -1,5 +1,10 @@
 #include <hardware/GPIODevice.h>
 
+GPIOEvent::GPIOEvent(EventSource* source, uint32_t events_triggered_mask)
+    : Event(source), events_triggered_mask(events_triggered_mask)
+{
+}
+
 GPIODevice::_GPIOEnableCallback::_GPIOEnableCallback()
 {
     gpio_set_irq_callback((gpio_irq_callback_t)&gpio_callback);

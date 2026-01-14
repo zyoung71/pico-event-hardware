@@ -18,6 +18,29 @@ enum USBConnectionStatus
     UP = 1
 };
 
+class USBUpdateEvent : public Event
+{
+public:
+    enum USBUpdateEventType
+    {
+        CONNECTED,
+        DISCONNECTED,
+        SUSPENDED,
+        RESUMED
+    };
+
+protected:
+    USBUpdateEventType event_type;
+
+public:
+    USBUpdateEvent(EventSource* source, USBUpdateEventType event_type);
+
+    inline USBUpdateEventType GetConnectionStatus() const
+    {
+        return event_type;
+    }
+};
+
 class SerialUSBDetector;
 
 static SerialUSBDetector* serial_usb_detector_instance = nullptr;

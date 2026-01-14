@@ -22,39 +22,8 @@ void Event::HandleEvents()
     }
 }
 
-Event::Event(const EventSource* source)
+Event::Event(EventSource* source)
     : source(source)
-{
-}
-
-GPIOEvent::GPIOEvent(const EventSource* source, uint32_t events_triggered_mask)
-    : Event(source), events_triggered_mask(events_triggered_mask)
-{
-}
-
-TimerEvent::TimerEvent(const EventSource* source)
-    : Event(source)
-{
-}
-
-ButtonEvent::ButtonEvent(const EventSource* source, uint32_t events_triggered_mask, uint32_t press_iteration)
-    : GPIOEvent(source, events_triggered_mask), press_iteration(press_iteration)    
-{
-}
-
-bool ButtonEvent::WasPressed() const
-{
-    const Button* button = (Button*)source;
-    return events_triggered_mask & (button->IsWiredToGround() ? GPIO_IRQ_EDGE_FALL : GPIO_IRQ_EDGE_RISE);
-}
-
-CommandEvent::CommandEvent(const EventSource* source, Command&& cmd)
-    : Event(source), command(cmd)
-{
-}
-
-USBUpdateEvent::USBUpdateEvent(const EventSource* source, USBUpdateEventType event_type)
-    : Event(source), event_type(event_type)
 {
 }
 

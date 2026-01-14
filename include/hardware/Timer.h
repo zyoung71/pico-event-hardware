@@ -2,6 +2,12 @@
 
 #include "../event/Event.h"
 
+class TimerEvent : public Event
+{
+public:
+    TimerEvent(EventSource* source);
+};
+
 class Timer : public EventSource
 {
 protected:

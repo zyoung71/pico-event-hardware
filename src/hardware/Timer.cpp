@@ -1,5 +1,10 @@
 #include <hardware/Timer.h>
 
+TimerEvent::TimerEvent(EventSource* source)
+    : Event(source)
+{
+}
+
 bool CountdownTimer::timer_callback(alarm_id_t id, void* timer)
 {
     CountdownTimer* self = (CountdownTimer*)timer;

@@ -9,7 +9,7 @@ protected:
     uint16_t adc_value;
 
 public:
-    AnalogEvent(const EventSource* source, uint8_t adc_pin, uint16_t adc_value);
+    AnalogEvent(EventSource* source, uint8_t adc_pin, uint16_t adc_value);
 
     inline uint8_t GetADCPin() const
     {

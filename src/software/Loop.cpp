@@ -16,7 +16,7 @@ int Loop::AddAction(CallbackAction action, void* user_data)
         }
         else
         {
-            Loop* this_ref = ev->GetSourceAsType<Loop>();
+            const Loop* this_ref = ev->GetSourceAsType<Loop>();
             for (auto&& act : this_ref->break_actions)
             {
                 act.action(ev, act.user_data);
@@ -37,4 +37,10 @@ void Loop::RemoveBreakAction(int id)
 {
     std::erase(break_actions, break_id_table[id]);
     id_table.erase(id);
+}
+
+void Loop::StartLoop()
+{
+    Event* ev = new Event(this);
+    queue_try_add(&Event::event_queue, &ev);
 }

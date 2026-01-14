@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <cstdarg>
 
+CommandEvent::CommandEvent(EventSource* source, Command&& cmd)
+    : Event(source), command(cmd)
+{
+}
+
 Command::Command(const ArrayView<char>& prefix, const ArrayView<char>& name, const ArrayView<char>& args, const ArrayView<char>& full)
 {
     strncpy(command_prefix, prefix.data, prefix.length);
