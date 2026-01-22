@@ -1,6 +1,5 @@
 #pragma once
 
-#include <event/Event.h>
 #include <event/Command.h>
 
 #include <tusb.h>

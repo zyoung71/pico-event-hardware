@@ -2,6 +2,7 @@
 #include <comms/serial_usb.h>
 
 #include <cstring>
+#include <cstdio>
 
 USBUpdateEvent::USBUpdateEvent(EventSource* source, USBUpdateEventType event_type)
     : Event(source), event_type(event_type)
