@@ -47,7 +47,7 @@ public:
     }
 };
 
-class AnalogRepeatingDevice : AnalogDevice
+class AnalogRepeatingDevice : public AnalogDevice
 {
 private:
     static constexpr uint32_t interval_ms = 100;
