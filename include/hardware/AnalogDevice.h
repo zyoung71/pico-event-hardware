@@ -50,7 +50,7 @@ public:
 class AnalogRepeatingDevice : public AnalogDevice
 {
 private:
-    static constexpr uint32_t interval_ms = 100;
+    static constexpr uint32_t interval_ms = 5;
 
     struct _InitData
     {
