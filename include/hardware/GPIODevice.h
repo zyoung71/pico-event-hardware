@@ -29,6 +29,9 @@ enum class Pull
 
 class GPIODevice : public IRQSource
 {
+public:
+    typedef GPIOEvent EventType;
+
 protected:
     static GPIODevice* instances[30];
 

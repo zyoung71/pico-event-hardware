@@ -9,7 +9,6 @@ if (NOT TARGET pico-event-hardware)
         src/hardware/Button.cpp
         src/hardware/SerialUSB.cpp
         src/hardware/AnalogDevice.cpp
-        src/software/Loop.cpp
     )
     
     add_subdirectory(lib/pico-util)

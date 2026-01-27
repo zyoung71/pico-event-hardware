@@ -1,6 +1,9 @@
 #pragma once
 
 #include <event/Event.h>
+#include "Timer.h"
+
+class AnalogDevice;
 
 class AnalogEvent : public Event
 {
@@ -23,12 +26,15 @@ public:
 
 class AnalogDevice : public EventSource
 {
+public:
+    typedef AnalogEvent EventType;
+
 protected:
     uint8_t adc_pin;
-    uint16_t adc_min_activation;
+    uint16_t adc_max_activation;
 
 public:
-    AnalogDevice(uint8_t adc_pin, uint16_t adc_min_activation);
+    AnalogDevice(uint8_t adc_pin, uint16_t adc_max_activation);
     virtual ~AnalogDevice() = default;
 
     inline uint8_t GetADCPin() const
@@ -37,6 +43,40 @@ public:
     }
     inline uint16_t GetADCActivation() const
     {
-        return adc_min_activation;
+        return adc_max_activation;
     }
+};
+
+class AnalogRepeatingDevice : AnalogDevice
+{
+private:
+    static constexpr uint32_t interval_ms = 100;
+
+    struct _InitData
+    {
+        RepeatingTimer& break_detection_timer;
+        AnalogEvent* latched_event;
+    };
+    struct _TimerData
+    {
+        RepeatingTimer& action_repeat_timer;
+        uint32_t& elapsed_ms;
+        uint32_t wait_window_ms;
+        uint32_t adc_spacing_break;
+        AnalogEvent* latched_event;
+    };
+
+    _InitData* init_data;
+    _TimerData* timer_data;
+
+protected:
+    RepeatingTimer break_detection_timer;
+    RepeatingTimer& repeat_timer;
+
+    uint32_t elapsed_ms = 0;
+    AnalogEvent* latched_event = nullptr;
+
+public:
+    AnalogRepeatingDevice(uint8_t adc_pin, uint16_t adc_max_activation, RepeatingTimer& repeat_timer, uint32_t window_ms, uint16_t adc_spacing_break = 50);
+    virtual ~AnalogRepeatingDevice();
 };

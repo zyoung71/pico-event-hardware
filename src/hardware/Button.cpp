@@ -134,3 +134,34 @@ void StickyButton::HandleIRQ(uint32_t events_triggered_mask)
         }
     }
 }
+
+RepeatingButton::RepeatingButton(uint8_t gpio_pin, RepeatingTimer& repeat_timer, uint32_t window_ms, bool gnd_tp_pin, uint32_t debounce_ms)
+    : Button(gpio_pin, gnd_to_pin, debounce_ms), edge_detection_timer(window_ms), repeat_timer(repeat_timer), repeat_wait_us(window_ms * 1000ULL)
+{
+    init_data = new _InitData{edge_detection_timer, repeat_timer};
+    std::ignore = AddAction([](const Event* ev, void* ptr){ // id is discarded as this action will be present during the button object's lifetime
+        ButtonEvent* event = ev->GetEventAsType<ButtonEvent>();
+        _InitData* data = (_InitData*)ptr;
+
+        if (event->WasPressed())
+        {
+            data->edge_detection_timer.Start();
+        }
+        else
+        {
+            data->edge_detection_timer.End();
+            data->repeat_timer.End();
+        }
+
+    }, init_data);
+
+    std::ignore = edge_detection_timer.AddAction([](const Event* ev, void* ptr){
+        RepeatingTimer* repeat_timer = (RepeatingTimer*)ptr;
+        repeat_timer->Start();
+    }, &repeat_timer);
+}
+
+RepeatingButton::~RepeatingButton()
+{
+    delete init_data;
+}

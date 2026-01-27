@@ -10,20 +10,30 @@ public:
 
 class Timer : public EventSource
 {
+public:
+    typedef TimerEvent EventType;
+
 protected:
-    bool is_active;
     absolute_time_t us_elapsed;
     absolute_time_t us_start;
     absolute_time_t us_begintime;
 
+    uint32_t interval_ms; // only matters when the Start function is called without arguments
+
+    bool is_active;
+
 public:
-    inline Timer()
+    inline Timer(uint32_t interval_ms = 1000)
         : EventSource(), us_elapsed(0), us_start(0), us_begintime(0), is_active(false)
     {
     }
     virtual ~Timer() = default;
 
-    virtual void Start(uint32_t ms) = 0;
+    virtual void Start(uint32_t ms) = 0; // overrides the initial timer interval
+    inline void Start()
+    {
+        return Start(interval_ms);
+    }
     virtual void End() = 0;
 
     inline uint64_t GetTimeElapsedMicroseconds() const
@@ -69,11 +79,13 @@ protected:
     int id;
 
 public:
-    inline CountdownTimer() : Timer(), id(-1) {}
+    inline CountdownTimer(uint32_t interval_ms = 1000) : Timer(interval_ms), id(-1) {}
     virtual ~CountdownTimer();
 
     virtual void Start(uint32_t ms) override;
     virtual void End() override;
+
+    using Timer::Start;
 };
 
 class RepeatingTimer : public Timer
@@ -85,10 +97,11 @@ protected:
     repeating_timer_t repeat_timer;
 
 public:
-    inline RepeatingTimer() : Timer() {}
+    inline RepeatingTimer(uint32_t interval_ms = 1000) : Timer(interval_ms) {}
     virtual ~RepeatingTimer();
 
     virtual void Start(uint32_t ms) override;
     virtual void End() override;
 
+    using Timer::Start;
 };

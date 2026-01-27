@@ -48,6 +48,9 @@ static SerialUSBDetector* serial_usb_detector_instance = nullptr;
 // is matched with the incoming serial.
 class SerialUSB : public EventSource
 {
+public:
+    typedef CommandEvent EventType;
+
 private:
     const char** causes_of_events; // What the buffer matches to in order to fire events.
     size_t causes_count;
@@ -66,6 +69,9 @@ public:
 // Simple event source to detect the physical port.
 class SerialUSBDetector : public EventSource
 {
+public:
+    typedef USBUpdateEvent EventType;
+
 private:
     USBConnectionStatus usb_stat;    
 

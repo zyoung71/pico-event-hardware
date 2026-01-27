@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GPIODevice.h"
+#include "Timer.h"
 
 class ButtonEvent : public GPIOEvent
 {
@@ -19,6 +20,9 @@ public:
 
 class Button : public GPIODeviceDebounce
 {
+public:
+    typedef ButtonEvent EventType;
+
 protected:
     bool gnd_to_pin;
 
@@ -78,5 +82,31 @@ protected:
 
 public:
     StickyButton(uint8_t gpio_pin, const GPIODevice* conditional_devices, size_t conditional_device_count, bool gnd_to_pin = true, uint32_t debounce_ms = 50);
+    virtual ~StickyButton() = default;
+};
 
+class RepeatingButton : public Button
+{
+private:
+    struct _InitData
+    {
+        CountdownTimer& edge_detection_timer;
+        RepeatingTimer& repeat_timer;
+    };
+
+    _InitData* init_data;
+
+protected:
+    absolute_time_t repeat_wait_us;
+    CountdownTimer edge_detection_timer;
+    RepeatingTimer& repeat_timer;
+
+public:
+    RepeatingButton(uint8_t gpio_pin, RepeatingTimer& repeat_timer, uint32_t window_ms = 1000, bool gnd_to_pin = true, uint32_t debounce = 50);
+    virtual ~RepeatingButton();
+
+    inline void SetRepeatWaitTimeWindowMs(uint32_t window_ms)
+    {
+        repeat_wait_us = window_ms * 1000ULL;
+    }
 };
