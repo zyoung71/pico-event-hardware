@@ -24,7 +24,7 @@ protected:
 
 public:
     inline Timer(uint32_t interval_ms = 1000)
-        : EventSource(), us_elapsed(0), us_start(0), us_begintime(0), is_active(false)
+        : EventSource(), us_elapsed(0), us_start(0), us_begintime(0), is_active(false), interval_ms(interval_ms)
     {
     }
     virtual ~Timer() = default;

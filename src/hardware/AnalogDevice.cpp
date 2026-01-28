@@ -49,9 +49,12 @@ AnalogRepeatingDevice::AnalogRepeatingDevice(uint8_t adc_pin, uint16_t adc_max_a
             return;
         }
         
+        if (data->action_repeat_timer.IsActive())
+            return;
+
         // if enough time has passed without a changed adc value, begin the repeat until the adc value changes
         data->elapsed_ms += interval_ms;
-        if (data->elapsed_ms >= data->wait_window_ms && !data->action_repeat_timer.IsActive())
+        if (data->elapsed_ms >= data->wait_window_ms)
         {
             data->action_repeat_timer.Start();
         }
