@@ -55,7 +55,7 @@ private:
     struct _InitData
     {
         RepeatingTimer& break_detection_timer;
-        AnalogEvent* latched_event;
+        uint16_t& latched_adc;
     };
     struct _TimerData
     {
@@ -63,7 +63,7 @@ private:
         uint32_t& elapsed_ms;
         uint32_t wait_window_ms;
         uint32_t adc_spacing_break;
-        AnalogEvent* latched_event;
+        uint16_t& latched_adc;
     };
 
     _InitData* init_data;
@@ -74,7 +74,7 @@ protected:
     RepeatingTimer& repeat_timer;
 
     uint32_t elapsed_ms = 0;
-    AnalogEvent* latched_event = nullptr;
+    uint16_t latched_adc_value = 0;
 
 public:
     AnalogRepeatingDevice(uint8_t adc_pin, uint16_t adc_max_activation, RepeatingTimer& repeat_timer, uint32_t window_ms, uint16_t adc_spacing_break = 50);
