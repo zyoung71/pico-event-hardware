@@ -41,6 +41,7 @@ AnalogRepeatingDevice::AnalogRepeatingDevice(uint8_t adc_pin, uint16_t adc_max_a
             self->End(); // should be called when the device goes inactive
             data->action_repeat_timer.End();
             data->elapsed_ms = 0;
+            return;
         }
         
         // if enough time has passed without a changed adc value, begin the repeat until the adc value changes
