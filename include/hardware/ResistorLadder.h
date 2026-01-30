@@ -11,7 +11,7 @@
 // All devices attached must be on the same ADC pin. If not, it will use the first element's ADC pin for ALL devices.
 // The devices attached must be sorted by their ADC activation value from lowest first to highest last. Call the SortDevices function if you are not certain of the ladder's order.
 template<size_t ladder_bars>
-class ResistorLadder : public GPIODeviceDebounce, public ArraySupplier<AnalogDevice*, ladder_bars>
+class ResistorLadder : public GPIODeviceDebounce<GPIOEvent>, public ArraySupplier<AnalogDevice*, ladder_bars>
 {
 private:
     static bool _ADCValueCompare(const AnalogDevice* a, const AnalogDevice* b)
@@ -25,7 +25,7 @@ protected:
     
 public:
     ResistorLadder(uint8_t shared_gpio_pin, Pull pull, uint32_t event_mask, uint16_t deadzone_max = 0xFFF, uint16_t deadzone_min = 0, uint32_t debounce_ms = 50)
-        : GPIODeviceDebounce(shared_gpio_pin, pull, event_mask, debounce_ms), deadzone_max(deadzone_max), deadzone_min(deadzone_min)
+        : GPIODeviceDebounce<GPIOEvent>(shared_gpio_pin, pull, event_mask, debounce_ms), deadzone_max(deadzone_max), deadzone_min(deadzone_min)
     {
     }
     virtual ~ResistorLadder() = default;
@@ -51,7 +51,7 @@ public:
                 if (adc_v < deadzone_min)
                     return;
 
-                for (auto& source : this->array)
+                for (auto source : this->array)
                 {
                     if (!source->IsEnabled())
                         continue;

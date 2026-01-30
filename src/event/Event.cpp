@@ -22,61 +22,13 @@ void Event::HandleEvents()
     }
 }
 
-Event::Event(EventSource* source)
+Event::Event(EventSourceBase* source)
     : source(source)
 {
 }
 
 /**
  * Event implementation end.
- * ---------------------------
- * Source implementation begin. 
 */
 
-int EventSource::assign_id = 0;
-
-bool EventSource::Callback::operator==(const EventSource::Callback& other) const
-{
-    return action == other.action && user_data == other.user_data;
-}
-
-EventSource::EventSource()
-    : is_enabled(true)
-{
-    event_actions.reserve(3);
-    id_table.reserve(3);
-}
-
-void EventSource::Dispatch(const Event* ev) const
-{
-    for (auto&& act : event_actions)
-    {
-        act.action(ev, act.user_data);
-    }
-}
-
-int EventSource::AddAction(CallbackAction action, void* user_data)
-{
-    int id = assign_id++;
-    event_actions.emplace_back(action, user_data);
-    id_table.emplace(id, event_actions.back());
-    return id;
-}
-
-void EventSource::RemoveAction(int id)
-{
-    std::erase(event_actions, id_table[id]);
-    id_table.erase(id);
-}
-
-void EventSource::Enable()
-{
-    is_enabled = true;
-    EnableImpl();
-}
-
-void EventSource::Disable()
-{
-    is_enabled = false;
-    DisableImpl();
-}
+int EventSourceBase::assign_id = 0;

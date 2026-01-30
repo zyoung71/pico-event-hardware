@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <cstdarg>
 
-CommandEvent::CommandEvent(EventSource* source, Command&& cmd)
+CommandEvent::CommandEvent(EventSourceBase* source, Command&& cmd)
     : Event(source), command(cmd)
 {
 }

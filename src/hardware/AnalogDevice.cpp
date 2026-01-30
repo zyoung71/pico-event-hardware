@@ -1,7 +1,7 @@
 #include <hardware/AnalogDevice.h>
 #include <hardware/adc.h>
 
-AnalogEvent::AnalogEvent(EventSource* source, uint8_t adc_pin, uint16_t adc_value)
+AnalogEvent::AnalogEvent(EventSourceBase* source, uint8_t adc_pin, uint16_t adc_value)
     : Event(source), adc_value(adc_value)
 {
 }
@@ -20,19 +20,18 @@ AnalogRepeatingDevice::AnalogRepeatingDevice(uint8_t adc_pin, uint16_t adc_max_a
     : AnalogDevice(adc_pin, adc_max_activation), repeat_timer(repeat_timer)
 {
     init_data = new _InitData{break_detection_timer, latched_adc_value};
-    std::ignore = AddAction([](const Event* ev, void* ptr){
+    std::ignore = AddAction([](const AnalogEvent* ev, auto self, void* ptr){
         _InitData* data = (_InitData*)ptr;
-        AnalogEvent* event = ev->GetEventAsType<AnalogEvent>();
 
-        data->latched_adc = event->GetADCValue();
+        data->latched_adc = ev->GetADCValue();
         data->break_detection_timer.Start(interval_ms);
     }, init_data);
 
     timer_data = new _TimerData{repeat_timer, elapsed_ms, window_ms, adc_spacing_break, latched_adc_value};
     // gets called every interval_ms milliseconds (defined in header file) until the ADC value changes more than the delta (adc_spacing_break)
-    std::ignore = break_detection_timer.AddAction([](const Event* ev, void* ptr){
+    std::ignore = break_detection_timer.AddAction([](const TimerEvent* ev, EventSource<TimerEvent>* self, void* ptr){
         _TimerData* data = (_TimerData*)ptr;
-        RepeatingTimer* self = ev->GetSourceAsType<RepeatingTimer>();
+        RepeatingTimer* self_timer = self->GetSourceAsType<RepeatingTimer>();
 
         uint16_t adc_v_then = data->latched_adc;
         uint16_t adc_v_now = adc_read();
@@ -43,7 +42,7 @@ AnalogRepeatingDevice::AnalogRepeatingDevice(uint8_t adc_pin, uint16_t adc_max_a
         // if the new adc value has a delta of 50 (device no longer active), end everything
         if (adc_v_now > adc_bound_high || adc_v_now < adc_bound_low)
         {
-            self->End(); // should be called when the device goes inactive
+            self_timer->End(); // should be called when the device goes inactive
             data->action_repeat_timer.End();
             data->elapsed_ms = 0;
             return;

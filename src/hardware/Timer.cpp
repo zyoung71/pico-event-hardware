@@ -1,6 +1,6 @@
 #include <hardware/Timer.h>
 
-TimerEvent::TimerEvent(EventSource* source)
+TimerEvent::TimerEvent(EventSourceBase* source)
     : Event(source)
 {
 }

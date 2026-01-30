@@ -32,7 +32,7 @@ protected:
     USBUpdateEventType event_type;
 
 public:
-    USBUpdateEvent(EventSource* source, USBUpdateEventType event_type);
+    USBUpdateEvent(EventSourceBase* source, USBUpdateEventType event_type);
 
     inline USBUpdateEventType GetConnectionStatus() const
     {
@@ -46,11 +46,8 @@ static SerialUSBDetector* serial_usb_detector_instance = nullptr;
 
 // An event source that fires its actions when a certain cause (a string)
 // is matched with the incoming serial.
-class SerialUSB : public EventSource
+class SerialUSB : public EventSource<CommandEvent>
 {
-public:
-    typedef CommandEvent EventType;
-
 private:
     const char** causes_of_events; // What the buffer matches to in order to fire events.
     size_t causes_count;
@@ -67,11 +64,8 @@ public:
 };
 
 // Simple event source to detect the physical port.
-class SerialUSBDetector : public EventSource
+class SerialUSBDetector : public EventSource<USBUpdateEvent>
 {
-public:
-    typedef USBUpdateEvent EventType;
-
 private:
     USBConnectionStatus usb_stat;    
 

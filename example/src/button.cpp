@@ -3,12 +3,12 @@
 #include <hardware/Button.h>
 #include <hardware/ResistorLadder.h>
 
-void button1_cb(const Event*, void*)
+void button1_cb(const ButtonEvent*, auto self, void*)
 {
     printf("Button 1 Pressed\n");
 }
 
-void button2_cb(const Event*, void*)
+void button2_cb(const ButtonEvent*, auto self, void*)
 {
     printf("Button 2 Pressed\n");
 }
@@ -40,11 +40,11 @@ int main()
 
     button_ladder.SortDevices();
 
-    int aid1 = abutton1.AddAction([](const Event* ev, void* ptr){
+    int aid1 = abutton1.AddAction([](const AnalogEvent* ev, auto self, void* ptr){
         printf("Analog Button 1 callback.\n");
     });
 
-    int aid2 = abutton2.AddAction([](const Event* ev, void* ptr){
+    int aid2 = abutton2.AddAction([](const AnalogEvent* ev, auto self, void* ptr){
         printf("Analog Button 2 callback.\n");
     });
 

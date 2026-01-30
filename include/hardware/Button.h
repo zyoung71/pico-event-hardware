@@ -8,7 +8,7 @@ class ButtonEvent : public GPIOEvent
 protected:
     uint32_t press_iteration;
 public:
-    ButtonEvent(EventSource* source, uint32_t events_triggered_mask, uint32_t press_iteration = 1);
+    ButtonEvent(EventSourceBase* source, uint32_t events_triggered_mask, uint32_t press_iteration = 1);
 
     inline uint32_t GetPressIteration() const
     {
@@ -18,11 +18,8 @@ public:
     bool WasPressed() const;
 };
 
-class Button : public GPIODeviceDebounce
+class Button : public GPIODeviceDebounce<ButtonEvent>
 {
-public:
-    typedef ButtonEvent EventType;
-
 protected:
     bool gnd_to_pin;
 

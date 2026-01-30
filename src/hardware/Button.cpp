@@ -1,6 +1,6 @@
 #include <hardware/Button.h>
 
-ButtonEvent::ButtonEvent(EventSource* source, uint32_t events_triggered_mask, uint32_t press_iteration)
+ButtonEvent::ButtonEvent(EventSourceBase* source, uint32_t events_triggered_mask, uint32_t press_iteration)
     : GPIOEvent(source, events_triggered_mask), press_iteration(press_iteration)    
 {
 }
@@ -12,7 +12,7 @@ bool ButtonEvent::WasPressed() const
 }
 
 Button::Button(uint8_t gpio_pin, bool gnd_to_pin, uint32_t debounce_ms)
-    : GPIODeviceDebounce(gpio_pin, gnd_to_pin ? Pull::UP : Pull::DOWN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, debounce_ms),
+    : GPIODeviceDebounce<ButtonEvent>(gpio_pin, gnd_to_pin ? Pull::UP : Pull::DOWN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, debounce_ms),
     gnd_to_pin(gnd_to_pin)
 {
 }
@@ -139,11 +139,10 @@ RepeatingButton::RepeatingButton(uint8_t gpio_pin, RepeatingTimer& repeat_timer,
     : Button(gpio_pin, gnd_to_pin, debounce_ms), edge_detection_timer(window_ms), repeat_timer(repeat_timer), repeat_wait_us(window_ms * 1000ULL)
 {
     init_data = new _InitData{edge_detection_timer, repeat_timer};
-    std::ignore = AddAction([](const Event* ev, void* ptr){ // id is discarded as this action will be present during the button object's lifetime
-        ButtonEvent* event = ev->GetEventAsType<ButtonEvent>();
+    std::ignore = AddAction([](const ButtonEvent* ev, auto self, void* ptr){ // id is discarded as this action will be present during the button object's lifetime
         _InitData* data = (_InitData*)ptr;
 
-        if (event->WasPressed())
+        if (ev->WasPressed())
         {
             data->edge_detection_timer.Start();
         }
@@ -155,7 +154,7 @@ RepeatingButton::RepeatingButton(uint8_t gpio_pin, RepeatingTimer& repeat_timer,
 
     }, init_data);
 
-    std::ignore = edge_detection_timer.AddAction([](const Event* ev, void* ptr){
+    std::ignore = edge_detection_timer.AddAction([](const TimerEvent* ev, auto self, void* ptr){
         RepeatingTimer* repeat_timer = (RepeatingTimer*)ptr;
         repeat_timer->Start();
     }, &repeat_timer);

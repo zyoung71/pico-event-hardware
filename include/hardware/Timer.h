@@ -5,14 +5,11 @@
 class TimerEvent : public Event
 {
 public:
-    TimerEvent(EventSource* source);
+    TimerEvent(EventSourceBase* source);
 };
 
-class Timer : public EventSource
+class Timer : public EventSource<TimerEvent>
 {
-public:
-    typedef TimerEvent EventType;
-
 protected:
     absolute_time_t us_elapsed;
     absolute_time_t us_start;

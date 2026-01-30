@@ -12,7 +12,7 @@ protected:
     uint16_t adc_value;
 
 public:
-    AnalogEvent(EventSource* source, uint8_t adc_pin, uint16_t adc_value);
+    AnalogEvent(EventSourceBase* source, uint8_t adc_pin, uint16_t adc_value);
 
     inline uint8_t GetADCPin() const
     {
@@ -24,11 +24,8 @@ public:
     }
 };
 
-class AnalogDevice : public EventSource
+class AnalogDevice : public EventSource<AnalogEvent>
 {
-public:
-    typedef AnalogEvent EventType;
-
 protected:
     uint8_t adc_pin;
     uint16_t adc_max_activation;

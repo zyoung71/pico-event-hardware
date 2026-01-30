@@ -5,7 +5,7 @@
 
 #include <pico/util/queue.h>
 
-class EventSource;
+class EventSourceBase;
 
 class Event
 {
@@ -17,49 +17,48 @@ private:
     static _InitializeEventQueue _initialize_event_queue;
 
 protected:
-    EventSource* source;
+    EventSourceBase* source;
 
 public:
     static queue_t event_queue;
 
     static void HandleEvents();
 
-    Event(EventSource* source);
-
-    /**
-     * @return The downcasted event type. Always check for a nullptr here.
-    */
-    template<class EventTemplate> requires std::is_base_of_v<Event, EventTemplate>
-    EventTemplate* GetEventAsType() const
-    {
-        if (EventTemplate* ev = (EventTemplate*)this)
-            return ev;
-        return nullptr;
-    }
-
-    inline EventSource* GetSource() const
-    {
-        return source;
-    }
-
-    template<class EventSourceTemplate> requires std::is_base_of_v<EventSource, EventSourceTemplate>
-    EventSourceTemplate* GetSourceAsType() const
-    {
-        if (EventSourceTemplate* t_source = (EventSourceTemplate*)source)
-            return t_source;
-        return nullptr;
-    }
+    Event(EventSourceBase* source);
 };
 
-class EventSource
+class EventSourceBase
 {
-private:
-    virtual void Dispatch(const Event* event) const;
+protected:
+    virtual void Dispatch(const Event* event) = 0;
 
     static int assign_id;
 
 public:
-    typedef void (*CallbackAction)(const Event* event, void* user_data);
+    friend Event;
+};
+
+template<class TEventType>
+    requires std::is_base_of_v<Event, TEventType>
+class EventSource : public EventSourceBase
+{
+private:
+    void Dispatch(const Event* event) override
+    {
+        TEventType* self_event = (TEventType*)event;
+        for (auto& c : event_actions)
+            c.action(self_event, this, c.user_data);
+    };
+
+public:
+    typedef void (*CallbackAction)(const TEventType* event, EventSource* self, void* user_data);
+    typedef TEventType EventType;
+
+    template<class TEventSource> requires std::is_base_of_v<EventSource<TEventType>, TEventSource>
+    inline TEventSource* GetSourceAsType()
+    {
+        return (TEventSource*)this;
+    }
 
 protected:
     struct Callback
@@ -67,7 +66,10 @@ protected:
         CallbackAction action;
         void* user_data;
 
-        bool operator==(const Callback& other) const;
+        inline bool operator==(const Callback& other) const
+        {
+            return action == other.action && user_data == other.user_data;
+        }
     };
 
 protected:
@@ -79,28 +81,49 @@ protected:
     virtual void DisableImpl() {};
 
 public:
-    EventSource();
+    EventSource() : is_enabled(true)
+    {
+        event_actions.reserve(3);
+        id_table.reserve(3);
+    }
     virtual ~EventSource() = default;
 
-    [[nodiscard]] virtual int AddAction(CallbackAction action, void* user_data = nullptr);
-    void RemoveAction(int id);
+    [[nodiscard]] virtual int AddAction(CallbackAction action, void* user_data = nullptr)
+    {
+        int id = assign_id++;
+        event_actions.emplace_back(action, user_data);
+        id_table.emplace(id, event_actions.back());
+        return id;
+    }
+    void RemoveAction(int id)
+    {
+        std::erase(event_actions, id_table[id]);
+        id_table.erase(id);
+    }
 
-    void Enable();
-    void Disable();
+    void Enable()
+    {
+        is_enabled = true;
+        EnableImpl();
+    }
+    void Disable()
+    {
+        is_enabled = false;
+        DisableImpl();
+    }
     inline bool IsEnabled() const
     {
         return is_enabled;
     }
-
-    friend Event;
 };
 
-class IRQSource : public EventSource
+template<class TEventType> requires std::is_base_of_v<Event, TEventType>
+class IRQSource : public EventSource<TEventType>
 {
 protected:
     virtual void HandleIRQ(uint32_t events_triggered_mask) = 0;
 
 public:
-    inline IRQSource() : EventSource() {}
+    inline IRQSource() : EventSource<TEventType>() {}
     virtual ~IRQSource() = default;
 };

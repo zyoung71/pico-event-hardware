@@ -43,7 +43,7 @@ protected:
     Command command;
 
 public:
-    CommandEvent(EventSource* source, Command&& cmd);
+    CommandEvent(EventSourceBase* source, Command&& cmd);
 
     inline const Command& GetCommand() const
     {

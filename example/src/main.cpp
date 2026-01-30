@@ -5,28 +5,27 @@
 #include <hardware/SerialUSB.h>
 #include <comms/serial_usb.h>
 
-void act0(const Event* ev, void* user_data)
+void act0(const ButtonEvent* ev, auto self, void* user_data)
 {
     printf("Action 0\n");
 }
-void act1(const Event* ev, void* user_data)
+void act1(const ButtonEvent* ev, auto self, void* user_data)
 {
     printf("Action 1\n");
 }
 
-void timer_action(const Event* ev, void* user_data)
+void timer_action(const TimerEvent* ev, auto self, void* user_data)
 {
     int value = *(int*)user_data;
     printf("Timer fired\tData: %i\n", value);
 }
 
-void serial_action(const Event* ev, void* user_data)
+void serial_action(const CommandEvent* ev, EventSource<CommandEvent>* self, void* user_data)
 {
-    auto real_event = ev->GetEventAsType<CommandEvent>();
-    auto source = ev->GetSourceAsType<SerialUSB>();
-    if (real_event && source)
+    if (ev && self)
     {
-        const Command& cmd = real_event->GetCommand();
+        const Command& cmd = ev->GetCommand();
+        SerialUSB* self_serial = self->GetSourceAsType<SerialUSB>();
         printf("Serial: %s\n", cmd.GetFullCommand());
         
         // Example: uploading a file. In this case, it is printed to stdout.
@@ -38,19 +37,18 @@ void serial_action(const Event* ev, void* user_data)
             char file_name[max_command_segment_length];
             cmd.ArgScan("%u \"%s\"", &file_size, file_name);
 
-            source->SendCommandOverUSB(Command("__cmd__", "ready")); // Ready for data to be sent.
+            self_serial->SendCommandOverUSB(Command("__cmd__", "ready")); // Ready for data to be sent.
             SerialUSB::serial_status = WORKING_READ;
         }
         
     }
 }
 
-void serial_detector_action(const Event* ev, void* user_data)
+void serial_detector_action(const USBUpdateEvent* ev, auto self, void* user_data)
 {
-    auto real_event = ev->GetEventAsType<USBUpdateEvent>();
-    if (real_event)
+    if (ev)
     {
-        printf("Serial Connection Event: %d", real_event->GetConnectionStatus());
+        printf("Serial Connection Event: %d", ev->GetConnectionStatus());
     }
 }
 
