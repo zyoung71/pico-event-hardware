@@ -13,7 +13,7 @@ GPIODevice::_GPIOEnableCallback::_GPIOEnableCallback()
 
 GPIODevice::_GPIOEnableCallback GPIODevice::_callback_enable_inst = GPIODevice::_GPIOEnableCallback();
 
-GPIODevice* GPIODevice::instances[30] = {};
+GPIODevice* GPIODevice::instances[48] = {};
 
 void GPIODevice::gpio_callback(uint8_t gpio_pin, uint32_t events_triggered_mask)
 {

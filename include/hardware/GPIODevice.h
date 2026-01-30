@@ -33,7 +33,7 @@ public:
     typedef GPIOEvent EventType;
 
 protected:
-    static GPIODevice* instances[30];
+    static GPIODevice* instances[48];
 
     uint8_t gpio_pin;
     uint32_t event_mask;
