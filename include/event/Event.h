@@ -26,15 +26,10 @@ public:
 
     Event(EventSource* source);
 
-    /**
-     * @return The downcasted event type. Always check for a nullptr here.
-    */
     template<class EventTemplate> requires std::is_base_of_v<Event, EventTemplate>
     EventTemplate* GetEventAsType() const
     {
-        if (EventTemplate* ev = (EventTemplate*)this)
-            return ev;
-        return nullptr;
+        return (EventTemplate*)this;
     }
 
     inline EventSource* GetSource() const
@@ -45,9 +40,7 @@ public:
     template<class EventSourceTemplate> requires std::is_base_of_v<EventSource, EventSourceTemplate>
     EventSourceTemplate* GetSourceAsType() const
     {
-        if (EventSourceTemplate* t_source = (EventSourceTemplate*)source)
-            return t_source;
-        return nullptr;
+        return (EventSourceTemplate*)source;
     }
 };
 

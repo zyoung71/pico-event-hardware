@@ -62,50 +62,13 @@ pico_enable_stdio_usb(peh-button 1)
 pico_enable_stdio_uart(peh-button 1)
 pico_add_extra_outputs(peh-button)
 
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/tmp/flash.sh
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/tmp/upload_button.sh
 "#!/bin/bash
-
-MOUNT_PNT=\"/mnt/pico\"
-
-mkdir -p $MOUNT_PNT
-
-DEVICE=$(blkid -o device -L ${PICO_LABEL})
-
-if [ -n \"$DEVICE\" ]
-then
-    sudo unmount -l $MOUNT_PNT
-    echo \"Found Pico at $DEVICE. Mounting...\"
-    sudo mount $DEVICE $MOUNT_PNT
-    echo \"Mounted $DEVICE at $MOUNT_PNT.\"
-    echo \"Copying binary to board...\"
-    sudo cp ${CMAKE_PROJECT_NAME}.uf2 $MOUNT_PNT/${CMAKE_PROJECT_NAME}.uf2
-else
-    echo \"Device not found. Be sure to hold BOOTSEL while re-powering the board to your computer.\"
-fi
-")
-
-file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/tmp/tty.sh
-"
-#!/bin/bash
-
-DEVICE_NAME=$(sudo dmesg | grep -oP 'ttyACM[0-9]+')
-
-if [ -z \"DEVICE_NAME\" ]
-then
-    echo \"Device not found, ensure serial print is enabled.\"
-else
-    minicom -b 115200 -o -D /dev/$DEVICE_NAME
-fi
+sudo openocd -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c \"adapter speed 5000\" -c \"program peh-button.elf verify reset exit\"
 ")
 
 file(
-    COPY ${CMAKE_CURRENT_BINARY_DIR}/tmp/flash.sh
-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
-    FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-)
-
-file(
-    COPY ${CMAKE_CURRENT_BINARY_DIR}/tmp/tty.sh
+    COPY ${CMAKE_CURRENT_BINARY_DIR}/tmp/upload_button.sh
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
     FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
