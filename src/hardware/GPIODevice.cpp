@@ -60,7 +60,8 @@ void GPIODevice::HandleIRQ(uint32_t events_triggered_mask)
 {
     if (event_mask & events_triggered_mask)
     {
-        Event* ev = new GPIOEvent(this, events_triggered_mask);   
+        Event* ev = new GPIOEvent(this, events_triggered_mask);
+        ProcessImmediateActions(ev);
         queue_try_add(&Event::event_queue, &ev);
     }
 }
@@ -81,7 +82,8 @@ void GPIODeviceDebounce::HandleIRQ(uint32_t events_triggered_mask)
     {
         if (debouncer.Allow())
         {
-            Event* ev = new GPIOEvent(this, events_triggered_mask);   
+            Event* ev = new GPIOEvent(this, events_triggered_mask); 
+            ProcessImmediateActions(ev);  
             queue_try_add(&Event::event_queue, &ev);
         }
     }

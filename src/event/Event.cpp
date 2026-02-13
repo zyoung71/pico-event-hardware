@@ -40,6 +40,12 @@ bool EventSource::Callback::operator==(const EventSource::Callback& other) const
     return action == other.action && user_data == other.user_data;
 }
 
+void EventSource::ProcessImmediateActions(const Event* ev) const
+{
+    for (auto&& act : event_actions_immediate)
+        act.action(ev, act.user_data);
+}
+
 EventSource::EventSource()
     : is_enabled(true)
 {
@@ -60,6 +66,14 @@ int EventSource::AddAction(CallbackAction action, void* user_data)
     int id = assign_id++;
     event_actions.emplace_back(action, user_data);
     id_table.emplace(id, event_actions.back());
+    return id;
+}
+
+int EventSource::AddImmediateAction(CallbackAction action, void* user_data)
+{
+    int id = assign_id++;
+    event_actions_immediate.emplace_back(action, user_data);
+    id_table.emplace(id, event_actions_immediate.back());
     return id;
 }
 

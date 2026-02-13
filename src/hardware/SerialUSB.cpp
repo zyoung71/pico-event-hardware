@@ -49,6 +49,7 @@ bool SerialUSB::DetectCommandsOverUSB()
             sscanf(buff + strlen(cause), "%63s \"%63[^\"]\"", cmd_name_buff, cmd_args_buff);
 
             Event* ev = new CommandEvent(this, Command(cause, cmd_name_buff, cmd_args_buff, buff));
+            ProcessImmediateActions(ev);
             queue_try_add(&Event::event_queue, &ev);
             return true;
         }

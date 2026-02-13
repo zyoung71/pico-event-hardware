@@ -10,6 +10,7 @@ void tud_mount_cb(void)
         if (serial_usb_detector_instance->IsEnabled())
         {
             Event* ev = new USBUpdateEvent(serial_usb_detector_instance, USBUpdateEvent::CONNECTED);
+            serial_usb_detector_instance->ProcessImmediateActions(ev);
             queue_try_add(&Event::event_queue, &ev);
         }
     }
@@ -23,6 +24,7 @@ void tud_umount_cb(void)
         if (serial_usb_detector_instance->IsEnabled())
         {
             Event* ev = new USBUpdateEvent(serial_usb_detector_instance, USBUpdateEvent::DISCONNECTED);
+            serial_usb_detector_instance->ProcessImmediateActions(ev);
             queue_try_add(&Event::event_queue, &ev);
         }
     }
@@ -35,7 +37,8 @@ void tud_suspend_cb(bool remote_wakeup_en)
         serial_usb_detector_instance->usb_stat = DOWN;
         if (serial_usb_detector_instance->IsEnabled())
         {
-            Event* ev = new USBUpdateEvent(serial_usb_detector_instance, USBUpdateEvent::SUSPENDED);   
+            Event* ev = new USBUpdateEvent(serial_usb_detector_instance, USBUpdateEvent::SUSPENDED);  
+            serial_usb_detector_instance->ProcessImmediateActions(ev); 
             queue_try_add(&Event::event_queue, &ev);
         }
     }
@@ -49,6 +52,7 @@ void tud_resume_cb(void)
         if (serial_usb_detector_instance->IsEnabled())
         {
             Event* ev = new USBUpdateEvent(serial_usb_detector_instance, USBUpdateEvent::RESUMED);
+            serial_usb_detector_instance->ProcessImmediateActions(ev);
             queue_try_add(&Event::event_queue, &ev);
         }
     }

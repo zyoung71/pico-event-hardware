@@ -59,6 +59,7 @@ public:
                     if (adc_v < source->GetADCActivation())
                     {
                         Event* ev_adc = new AnalogEvent(source, source->GetADCPin(), adc_v);
+                        ProcessImmediateActions(ev_adc);
                         queue_try_add(&Event::event_queue, &ev_adc);
                         return;
                     }

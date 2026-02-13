@@ -59,34 +59,38 @@ int main()
         printf("Analog Button 2 callback. ADC: %d\n", event->GetADCValue());
     });
 
-    int aid3 = abutton2.AddAction([](const Event* ev, void* ptr){
+    int aid3 = abutton3.AddAction([](const Event* ev, void* ptr){
         AnalogEvent* event = ev->GetEventAsType<AnalogEvent>();
         printf("Analog Button 3 callback. ADC: %d\n", event->GetADCValue());
     });
 
-    int aid4 = abutton2.AddAction([](const Event* ev, void* ptr){
+    int aid4 = abutton4.AddAction([](const Event* ev, void* ptr){
         AnalogEvent* event = ev->GetEventAsType<AnalogEvent>();
         printf("Analog Button 4 callback. ADC: %d\n", event->GetADCValue());
     });
 
-    int aid5 = abutton2.AddAction([](const Event* ev, void* ptr){
+    int aid5 = abutton5.AddAction([](const Event* ev, void* ptr){
         AnalogEvent* event = ev->GetEventAsType<AnalogEvent>();
         printf("Analog Button 5 callback. ADC: %d\n", event->GetADCValue());
     });
 
-    int aid6 = abutton2.AddAction([](const Event* ev, void* ptr){
+    int aid6 = abutton6.AddAction([](const Event* ev, void* ptr){
         AnalogEvent* event = ev->GetEventAsType<AnalogEvent>();
         printf("Analog Button 6 callback. ADC: %d\n", event->GetADCValue());
     });
 
-    int aid7 = abutton2.AddAction([](const Event* ev, void* ptr){
+    int aid7 = abutton7.AddAction([](const Event* ev, void* ptr){
         AnalogEvent* event = ev->GetEventAsType<AnalogEvent>();
         printf("Analog Button 7 callback. ADC: %d\n", event->GetADCValue());
     });
 
-    int aid8 = abutton2.AddAction([](const Event* ev, void* ptr){
+    int aid8 = abutton8.AddAction([](const Event* ev, void* ptr){
         AnalogEvent* event = ev->GetEventAsType<AnalogEvent>();
         printf("Analog Button 8 callback. ADC: %d\n", event->GetADCValue());
+    });
+
+    int aid8_imm = abutton8.AddImmediateAction([](const Event* ev, void* ptr){
+        asm volatile ("nop");
     });
 
     while (1)

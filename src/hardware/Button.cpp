@@ -24,6 +24,7 @@ void Button::HandleIRQ(uint32_t events_triggered_mask)
         if (debouncer.Allow())
         {
             Event* ev = new ButtonEvent(this, events_triggered_mask);
+            ProcessImmediateActions(ev);
             queue_try_add(&Event::event_queue, &ev);
         }
     }
@@ -55,12 +56,14 @@ void DoublePressButton::HandleIRQ(uint32_t events_triggeted_mask)
             {
                 double_press_intermediate = false;
                 Event* ev = new ButtonEvent(this, events_triggeted_mask, 2);
+                ProcessImmediateActions(ev);
                 queue_try_add(&Event::event_queue, &ev);
             }
             else
             {
                 double_press_intermediate = true;
                 Event* ev = new ButtonEvent(this, events_triggeted_mask, 1);
+                ProcessImmediateActions(ev);
                 queue_try_add(&Event::event_queue, &ev);
             }
     
@@ -92,18 +95,21 @@ void TriplePressButton::HandleIRQ(uint32_t events_triggered_mask)
                 triple_press_intermediate = false;
                 double_press_intermediate = false;
                 Event* ev = new ButtonEvent(this, events_triggered_mask, 3);
+                ProcessImmediateActions(ev);
                 queue_try_add(&Event::event_queue, &ev);
             }
             else if (double_press_intermediate) // On second press
             {
                 triple_press_intermediate = true;
                 Event* ev = new ButtonEvent(this, events_triggered_mask, 2);
+                ProcessImmediateActions(ev);
                 queue_try_add(&Event::event_queue, &ev);
             }
             else // On first press
             {
                 double_press_intermediate = true;
                 Event* ev = new ButtonEvent(this, events_triggered_mask, 1);
+                ProcessImmediateActions(ev);
                 queue_try_add(&Event::event_queue, &ev);
             }
     
@@ -130,6 +136,7 @@ void StickyButton::HandleIRQ(uint32_t events_triggered_mask)
             }
     
             Event* ev = new ButtonEvent(this, events_triggered_mask);
+            ProcessImmediateActions(ev);
             queue_try_add(&Event::event_queue, &ev);
         }
     }

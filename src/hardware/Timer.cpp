@@ -10,6 +10,7 @@ bool CountdownTimer::timer_callback(alarm_id_t id, void* timer)
     CountdownTimer* self = (CountdownTimer*)timer;
 
     Event* ev = new TimerEvent(self);
+    self->ProcessImmediateActions(ev);
     queue_try_add(&Event::event_queue, &ev);
 
     self->us_start = 0;
@@ -53,6 +54,7 @@ bool RepeatingTimer::timer_callback(repeating_timer_t* timer)
     RepeatingTimer* self = (RepeatingTimer*)timer->user_data;
 
     Event* ev = new TimerEvent(self);
+    self->ProcessImmediateActions(ev);
     queue_try_add(&Event::event_queue, &ev);
     
     self->us_start = to_us_since_boot(get_absolute_time());

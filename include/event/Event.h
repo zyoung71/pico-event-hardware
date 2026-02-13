@@ -65,17 +65,21 @@ protected:
 
 protected:
     std::vector<Callback> event_actions;
+    std::vector<Callback> event_actions_immediate;
     std::unordered_map<int, Callback> id_table;
     bool is_enabled;
 
     virtual void EnableImpl() {};
     virtual void DisableImpl() {};
 
+    void ProcessImmediateActions(const Event* ev) const;
+
 public:
     EventSource();
     virtual ~EventSource() = default;
 
     [[nodiscard]] virtual int AddAction(CallbackAction action, void* user_data = nullptr);
+    [[nodiscard]] virtual int AddImmediateAction(CallbackAction action, void* user_data = nullptr);
     void RemoveAction(int id);
 
     void Enable();
