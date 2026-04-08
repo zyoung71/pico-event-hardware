@@ -36,7 +36,7 @@ int main()
     AnalogDevice abutton7(26, 3525);
     AnalogDevice abutton8(26, 3800);
 
-    ResistorLadder<8> button_ladder(16, Pull::UP, GPIO_IRQ_EDGE_FALL);
+    DetectableResistorLadder<8> button_ladder(16, Pull::UP, GPIO_IRQ_EDGE_FALL);
 
     ADD_TO_RLADDER(1);
     ADD_TO_RLADDER(2);

@@ -72,8 +72,6 @@ protected:
     virtual void EnableImpl() {};
     virtual void DisableImpl() {};
 
-    void ProcessImmediateActions(const Event* ev) const;
-
 public:
     EventSource();
     virtual ~EventSource() = default;
@@ -88,6 +86,8 @@ public:
     {
         return is_enabled;
     }
+
+    void ProcessImmediateActions(const Event* ev) const;
 
     friend Event;
 };
