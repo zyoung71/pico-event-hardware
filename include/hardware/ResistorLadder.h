@@ -38,7 +38,7 @@ public:
         adc_select_input(this->array[0]->GetADCPin() - ADC_PIN_BEGIN_OFFSET);
         uint16_t adc_v = adc_read();
 
-        if (adc_v < deadzone_min)
+        if (adc_v < deadzone_min || adc_v > deadzone_max)
             return;
     
         for (AnalogDevice* source : this->array)
@@ -54,9 +54,41 @@ public:
                 return;
             }
         }
-    
-        //if (adc_v > deadzone_max) // Unnecessary for now.
-        //    return;
+    }
+
+    void DetectADCAndLatch()
+    {
+        static int32_t previous_button_index = -1;
+        int32_t current_button_index;
+
+        adc_select_input(this->array[0]->GetADCPin() - ADC_PIN_BEGIN_OFFSET);
+        uint16_t adc_v = adc_read();
+
+        if (adc_v < deadzone_min || adc_v > deadzone_max)
+            return;
+
+        for (size_t i = 0; i < ladder_bars; i++)
+        {
+            AnalogDevice* source = this->array[i];
+
+            if (!source->IsEnabled())
+                continue;
+
+            if (adc_v < source->GetADCActivation())
+            {
+                current_button_index = i;
+                if (current_button_index == previous_button_index)
+                {
+                    return; // cancel
+                }
+                previous_button_index = current_button_index;
+                Event* ev_adc = new AnalogEvent(source, source->GetADCPin(), adc_v);
+                source->ProcessImmediateActions(ev_adc);
+                queue_try_add(&Event::event_queue, &ev_adc);
+                return;
+            }
+            previous_button_index = -1; // if no button pressed
+        }
     }
 
 };
