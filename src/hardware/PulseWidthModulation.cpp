@@ -35,8 +35,6 @@ void PulseWidthModulation::SetFrequency(float frequency)
 
     uint channel = pwm_gpio_to_channel(gpio_pin);
     pwm_set_chan_level(slice, channel, 0);
-
-    pwm_set_enabled(slice, true);
 }
 
 void PulseWidthModulation::SetDutyCycle(float duty_cycle)
@@ -47,4 +45,9 @@ void PulseWidthModulation::SetDutyCycle(float duty_cycle)
         duty_cycle = 1.f;
 
     pwm_set_chan_level(slice, channel, duty_cycle * (wrap + 1));
+}
+
+void PulseWidthModulation::SetEnabled(bool enable)
+{
+    pwm_set_enabled(slice, enable);
 }

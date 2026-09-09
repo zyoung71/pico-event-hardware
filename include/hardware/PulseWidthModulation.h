@@ -17,4 +17,6 @@ public:
 
     void SetFrequency(float frequency);
     void SetDutyCycle(float duty_cycle);
+
+    void SetEnabled(bool enable);
 };
