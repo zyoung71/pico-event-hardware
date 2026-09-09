@@ -9,6 +9,7 @@ if (NOT TARGET pico-event-hardware)
         src/hardware/Button.cpp
         src/hardware/SerialUSB.cpp
         src/hardware/AnalogDevice.cpp
+        src/hardware/PulseWidthModulation.cpp
     )
     
     add_subdirectory(lib/pico-util)
@@ -22,6 +23,8 @@ if (NOT TARGET pico-event-hardware)
         pico-util
         pico-comms
         hardware_adc
+        hardware_pwm
+        hardware_clocks
     )
     
 endif()
