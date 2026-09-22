@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include <hardware/Button.h>
-#include <hardware/Timer.h>
-#include <hardware/SerialUSB.h>
+#include <hardware/Button.hpp>
+#include <hardware/Timer.hpp>
+#include <hardware/SerialUSB.hpp>
 #include <comms/serial_usb.h>
 
 void act0(const Event* ev, void* user_data)

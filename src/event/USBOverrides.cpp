@@ -1,4 +1,4 @@
-#include <hardware/SerialUSB.h>
+#include <hardware/SerialUSB.hpp>
 
 #include <tusb.h>
 

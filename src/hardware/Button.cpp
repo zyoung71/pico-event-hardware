@@ -1,4 +1,4 @@
-#include <hardware/Button.h>
+#include <hardware/Button.hpp>
 
 ButtonEvent::ButtonEvent(EventSource* source, uint32_t events_triggered_mask, uint32_t press_iteration)
     : GPIOEvent(source, events_triggered_mask), press_iteration(press_iteration)    
@@ -142,7 +142,7 @@ void StickyButton::HandleIRQ(uint32_t events_triggered_mask)
     }
 }
 
-RepeatingButton::RepeatingButton(uint8_t gpio_pin, RepeatingTimer& repeat_timer, uint32_t window_ms, bool gnd_tp_pin, uint32_t debounce_ms)
+RepeatingButton::RepeatingButton(uint8_t gpio_pin, RepeatingTimer& repeat_timer, uint32_t window_ms, bool gnd_to_pin, uint32_t debounce_ms)
     : Button(gpio_pin, gnd_to_pin, debounce_ms), edge_detection_timer(window_ms), repeat_timer(repeat_timer), repeat_wait_us(window_ms * 1000ULL)
 {
     init_data = new _InitData{edge_detection_timer, repeat_timer};

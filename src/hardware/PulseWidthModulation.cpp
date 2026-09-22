@@ -1,4 +1,4 @@
-#include <hardware/PulseWidthModulation.h>
+#include <hardware/PulseWidthModulation.hpp>
 
 #include <hardware/clocks.h>
 #include <hardware/gpio.h>

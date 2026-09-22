@@ -1,4 +1,4 @@
-#include <event/Command.h>
+#include <event/Command.hpp>
 
 #include <cstring>
 #include <stdio.h>

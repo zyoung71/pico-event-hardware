@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include <hardware/Button.h>
-#include <hardware/ResistorLadder.h>
+#include <hardware/Button.hpp>
+#include <hardware/ResistorLadder.hpp>
 
 // void button1_cb(const Event*, void*)
 // {

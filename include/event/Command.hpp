@@ -1,7 +1,7 @@
 #pragma once
 
-#include <util/ArrayView.h>
-#include "Event.h"
+#include <util/ArrayView.hpp>
+#include "Event.hpp"
 
 static constexpr size_t max_command_segment_length = 64;
 static constexpr size_t max_command_length = max_command_segment_length * 3;

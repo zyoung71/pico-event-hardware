@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../event/Event.h"
+#include <event/Event.hpp>
 
 class TimerEvent : public Event
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <event/Command.h>
+#include <event/Command.hpp>
 
 #include <tusb.h>
 

@@ -1,5 +1,5 @@
-#include <event/Event.h>
-#include <hardware/Button.h>
+#include <event/Event.hpp>
+#include <hardware/Button.hpp>
 
 queue_t Event::event_queue = {};
 Event::_InitializeEventQueue Event::_initialize_event_queue = Event::_InitializeEventQueue();

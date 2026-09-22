@@ -1,4 +1,4 @@
-#include <hardware/AnalogDevice.h>
+#include <hardware/AnalogDevice.hpp>
 #include <hardware/adc.h>
 
 AnalogEvent::AnalogEvent(EventSource* source, uint8_t adc_pin, uint16_t adc_value)

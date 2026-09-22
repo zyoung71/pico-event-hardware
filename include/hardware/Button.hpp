@@ -1,7 +1,7 @@
 #pragma once
 
-#include "GPIODevice.h"
-#include "Timer.h"
+#include "GPIODevice.hpp"
+#include "Timer.hpp"
 
 class ButtonEvent : public GPIOEvent
 {

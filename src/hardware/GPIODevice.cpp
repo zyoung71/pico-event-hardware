@@ -1,4 +1,4 @@
-#include <hardware/GPIODevice.h>
+#include <hardware/GPIODevice.hpp>
 
 GPIOEvent::GPIOEvent(EventSource* source, uint32_t events_triggered_mask)
     : Event(source), events_triggered_mask(events_triggered_mask)

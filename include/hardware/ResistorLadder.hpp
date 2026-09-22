@@ -1,9 +1,9 @@
 #pragma once
 
-#include "AnalogDevice.h"
-#include "GPIODevice.h"
+#include "AnalogDevice.hpp"
+#include "GPIODevice.hpp"
 
-#include <util/ArraySupplier.h>
+#include <util/ArraySupplier.hpp>
 
 #include <algorithm>
 #include <hardware/adc.h>

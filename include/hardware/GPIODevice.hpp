@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../event/Event.h"
-
-#include <util/Debounce.h>
+#include <event/Event.hpp>
+#include <util/Debounce.hpp>
 
 #include <pico/stdlib.h>
 

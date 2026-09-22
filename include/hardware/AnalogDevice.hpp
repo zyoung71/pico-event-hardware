@@ -1,7 +1,7 @@
 #pragma once
 
-#include <event/Event.h>
-#include "Timer.h"
+#include <event/Event.hpp>
+#include "Timer.hpp"
 
 class AnalogDevice;
 

@@ -1,4 +1,4 @@
-#include <hardware/Timer.h>
+#include <hardware/Timer.hpp>
 
 TimerEvent::TimerEvent(EventSource* source)
     : Event(source)
